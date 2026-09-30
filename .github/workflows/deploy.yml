@@ -54,6 +54,6 @@ jobs:
           key: ${{ secrets.ECS_SSH_KEY }}
           port: ${{ secrets.ECS_PORT }}
           script: |
-  sudo chown -R deploy:www-data /var/www/astro-blog
-  sudo find /var/www/astro-blog -type d -exec chmod 775 {} \;
-  sudo find /var/www/astro-blog -type f -exec chmod 664 {} \;
+            sudo chown -R deploy:www-data /var/www/astro-blog
+            sudo find /var/www/astro-blog -type d -exec chmod 775 {} \;
+            sudo find /var/www/astro-blog -type f -exec chmod 664 {} \;
