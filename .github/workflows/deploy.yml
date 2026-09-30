@@ -1,0 +1,59 @@
+name: Deploy Astro to VPS
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 拉取代码
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      # 安装 Node.js
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      # 安装依赖
+      - name: Install dependencies
+        run: npm ci
+
+      # 构建 Astro
+      - name: Build Astro
+        run: npm run build
+
+      # 上传 dist 到 VPS
+      - name: Upload dist to VPS
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.ECS_HOST }}
+          username: ${{ secrets.ECS_USER }}
+          key: ${{ secrets.ECS_SSH_KEY }}
+          port: ${{ secrets.ECS_PORT }}
+          source: "dist/*"
+          target: /var/www/astro-blog
+          strip_components: 1
+          overwrite: true
+
+      # 修复权限
+      - name: Fix permissions
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.ECS_HOST }}
+          username: ${{ secrets.ECS_USER }}
+          key: ${{ secrets.ECS_SSH_KEY }}
+          port: ${{ secrets.ECS_PORT }}
+          script: |
+            sudo chown -R deploy:www-data /var/www/astro-blog
+            sudo find /var/www/astro-blog -type d -exec chmod 775 {} \;
+            sudo find /var/www/astro-blog -type f -exec chmod 664 {} \;
