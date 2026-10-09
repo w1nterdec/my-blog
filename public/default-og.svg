@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#f5f3eb" />
+  <rect x="80" y="80" width="64" height="6" fill="#526b45" />
+  <g font-family="Microsoft YaHei, PingFang SC, sans-serif">
+    <text x="80" y="170" font-size="24" fill="#687060">w1nter / 生活随笔</text>
+    <text x="76" y="292" font-size="88" font-weight="700" fill="#30372d">知行博客</text>
+    <text x="80" y="372" font-size="30" fill="#687060">记录生活中的片刻，分享日常的感受与思考。</text>
+    <text x="80" y="540" font-size="23" fill="#526b45">chenzhixing.bbroot.com</text>
+  </g>
+</svg>

@@ -1,0 +1,82 @@
+---
+import Socials from "./Socials.astro";
+import { personal, places } from "@/data/personal";
+import { getAssetPath } from "@/utils/withBase";
+import { getRelativeLocaleUrl } from "astro:i18n";
+import config from "@/config";
+const locale = Astro.currentLocale ?? config.site.lang;
+---
+
+<aside class="personal-sidebar" aria-label="个人近况">
+  <section class="profile-panel surface reveal">
+    <a
+      class="avatar-link"
+      href={getRelativeLocaleUrl(locale, "about")}
+      aria-label="认识 w1nter"
+    >
+      <img
+        src={getAssetPath(personal.avatar)}
+        alt="w1nter 的 GitHub 头像"
+        width="88"
+        height="88"
+      />
+    </a>
+    <h2>{personal.name}</h2>
+    <p class="profile-signature">{personal.signature}</p>
+    <p class="location-line">
+      <span class="location-dot" aria-hidden="true"></span>{personal.location}
+    </p>
+    <Socials />
+    <a class="text-link" href={getRelativeLocaleUrl(locale, "about")}
+      >关于我 <span aria-hidden="true">↗</span></a
+    >
+  </section>
+  <section class="status-panel surface reveal">
+    <p class="eyebrow">
+      <span class="status-dot" aria-hidden="true"></span> 此刻 / NOW
+    </p>
+    <h2>生活正在发生</h2>
+    <p>{personal.status}</p>
+  </section>
+  <a
+    class="project-panel surface reveal"
+    href={personal.project.url}
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    <div class="section-top">
+      <span class="eyebrow">一个正在做的项目</span><span class="pill"
+        >进行中</span
+      >
+    </div>
+    <h2>{personal.project.name}<span aria-hidden="true"> ↗</span></h2>
+    <p>{personal.project.description}</p>
+    <span class="project-tags">DATASET · FINE-TUNING · RAG</span>
+  </a>
+  <a
+    class="footprint-panel surface reveal"
+    href={getRelativeLocaleUrl(locale, "about") + "#footprints"}
+  >
+    <span class="eyebrow">留在地图上的记忆</span>
+    <div class="footprint-preview" aria-hidden="true">
+      <svg viewBox="0 0 240 110" fill="none"
+        ><ellipse cx="120" cy="55" rx="79" ry="48"></ellipse><ellipse
+          cx="120"
+          cy="55"
+          rx="36"
+          ry="48"></ellipse><path d="M41 55h158M55 28h130M55 82h130M120 7v96"
+        ></path><path class="route-line" d="M95 70Q100 26 137 42T159 66"
+        ></path><circle class="map-dot" cx="137" cy="42" r="4"></circle><circle
+          class="map-dot"
+          cx="95"
+          cy="70"
+          r="3"></circle><circle class="map-dot" cx="159" cy="66" r="3"
+        ></circle></svg
+      >
+    </div>
+    <div class="section-top">
+      <h2>走过的地方</h2><span aria-hidden="true">↗</span>
+    </div>
+    <p>中国 · {places.length} 座城市</p>
+  </a>
+</aside>

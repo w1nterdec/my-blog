@@ -1,0 +1,68 @@
+export const personal = {
+  name: "w1nter",
+  signature: "attention is all my need",
+  avatar: "avatar.webp",
+  location: "中国 · 武汉",
+  status: "最近在上学，也在做个人 AI 工程项目。",
+  project: {
+    name: "techrag-lab",
+    description:
+      "面向中文技术知识的 AI 工程系统，涵盖数据集工程、微调、RAG 与部署。",
+    url: "https://github.com/w1nterdec/techrag-lab",
+  },
+};
+
+export interface Place {
+  name: string;
+  coordinates: [number, number];
+  residence?: "现居" | "曾居";
+  visited: boolean;
+  description: string;
+}
+
+export const places: Place[] = [
+  {
+    name: "武汉",
+    coordinates: [114.3, 30.59],
+    residence: "现居",
+    visited: true,
+    description: "如今生活与学习的地方，也是旅途中到过的一站。",
+  },
+  {
+    name: "成都",
+    coordinates: [104.07, 30.57],
+    residence: "曾居",
+    visited: true,
+    description: "曾经生活过的城市，也留下过旅行的足迹。",
+  },
+  {
+    name: "洛阳",
+    coordinates: [112.45, 34.62],
+    visited: true,
+    description: "旅途中到过的一站，关于这座城的故事，留待慢慢记录。",
+  },
+  {
+    name: "合肥",
+    coordinates: [117.23, 31.82],
+    visited: true,
+    description: "曾在旅途中停留，记忆将在这里慢慢展开。",
+  },
+  {
+    name: "安阳",
+    coordinates: [114.39, 36.1],
+    visited: true,
+    description: "旅行足迹中的一座城，期待再把记忆写下来。",
+  },
+];
+
+export interface Photo {
+  src: string;
+  alt: string;
+  title: string;
+  category: "人像" | "猫犬";
+  location?: string;
+}
+
+// Add real works here after placing image files under public/photos/.
+// Paths are relative to public/, e.g. "photos/portrait-01.webp".
+export const photos: Photo[] = [];

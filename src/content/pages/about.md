@@ -1,37 +1,28 @@
 ---
-title: "About"
-description: "A bit about me and this blog."
+title: "关于"
+description: "关于 w1nter，以及知行博客。"
 ---
 
-AstroPaper is a minimal, accessible and SEO-friendly blog theme built with [Astro](https://astro.build/) and [Tailwind CSS](https://tailwindcss.com/).
+## 关于我
 
-![Astro Paper](@/assets/images/astropaper-og.jpg)
+你好，我是 **w1nter**。
 
-AstroPaper provides a solid foundation for blogs, or even portfolios\_ with full markdown support, built-in dark mode, and a clean layout that works out-of-the-box.
+> attention is all my need
 
-The blog posts in this theme also serve as guides, docs or example articles\_ making AstroPaper a flexible starting point for your next content-driven site.
+## 关于知行博客
 
-## Features
+这里主要记录生活随笔，也留下一些学习与实践中的发现。
 
-AstroPaper comes with a set of useful features that make content publishing easy and effective:
+记录生活中的片刻、感受与思考，给未来的自己留一些文字。这是我开始写博客的初衷。
 
-- SEO-friendly
-- Fast performance
-- Light & dark mode
-- Highly customizable
-- Organizable blog posts
-- Responsive & accessible
-- Static search with [PageFind](https://pagefind.app/)
-- Automatic social image generation
+把想法写下来，把学到的东西用起来。希望这些记录既能帮助未来的自己，也能给路过的你带来一点启发。
 
-and so much more.
+## 联系我
 
-## Show your support
+- [GitHub：w1nterdec](https://github.com/w1nterdec)
+- [X：@chencz08](https://x.com/chencz08)
+- [邮箱：zhixing0810cz@gmail.com](mailto:zhixing0810cz@gmail.com)
 
-If you like [AstroPaper](https://github.com/satnaing/astro-paper), consider giving it a star ⭐️.
+## 网站致谢
 
-Found a bug 🐛 or have an improvement ✨ in mind? Feel free to open an [issue](https://github.com/satnaing/astro-paper/issues), submit a [pull request](https://github.com/satnaing/astro-paper/pulls) or start a [discussion](https://github.com/satnaing/astro-paper/discussions).
-
-If you find this theme helpful, you can also [sponsor me on GitHub](https://github.com/sponsors/satnaing) or [buy me a coffee](https://buymeacoffee.com/satnaing) to show your support — every penny counts.
-
-Kyay zuu! 🙏🏼
+这个博客使用 [Astro](https://astro.build/) 构建，基于 [AstroPaper](https://github.com/satnaing/astro-paper) 主题。感谢开源项目作者与贡献者。

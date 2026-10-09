@@ -21,6 +21,11 @@ export default {
     editPage: "Edit page",
     previousPost: "Previous Post",
     nextPost: "Next Post",
+    copy: "Copy",
+    copied: "Copied",
+    zoomImage: "Zoom image",
+    imagePreview: "Image preview",
+    closeImagePreview: "Close image preview",
   },
   pagination: {
     prev: "Prev",

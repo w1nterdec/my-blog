@@ -1,0 +1,86 @@
+---
+import { places } from "@/data/personal";
+import { getAssetPath } from "@/utils/withBase";
+---
+
+<section
+  id="footprints"
+  class="travel-section reveal"
+  aria-labelledby="footprints-title"
+  data-globe
+  data-world-url={getAssetPath("maps/world.json")}
+  data-places={JSON.stringify(places)}
+>
+  <div class="section-heading">
+    <div>
+      <span class="eyebrow">PLACES / 留在地图上的记忆</span><h2
+        id="footprints-title"
+      >
+        走过的地方
+      </h2>
+    </div><span class="pill">中国 · 5 座城市</span>
+  </div>
+  <div class="globe-layout surface">
+    <div class="globe-stage">
+      <div class="globe-coordinate" aria-hidden="true">
+        30.59° N / 114.30° E
+      </div>
+      <canvas
+        class="travel-globe"
+        tabindex="0"
+        role="img"
+        aria-label="可旋转的城市地球仪。使用左右上下方向键旋转，加减键缩放，也可使用旁边的城市按钮。"
+      ></canvas>
+      <p class="globe-loading">地球正在展开…</p>
+      <div class="globe-controls">
+        <button type="button" data-globe-play aria-pressed="true"
+          >暂停旋转</button
+        ><button type="button" data-globe-reset>回到中国</button><button
+          type="button"
+          data-globe-touch
+          aria-pressed="false">自由拖动</button
+        >
+      </div>
+      <p class="globe-hint">横向拖动旋转 · 点选城市，靠近一段记忆</p>
+    </div>
+    <div class="globe-info">
+      <div class="globe-legend">
+        <span><i class="residence-dot"></i>居住</span><span
+          ><i class="travel-dot"></i>旅行</span
+        >
+      </div>
+      <div class="city-buttons" role="group" aria-label="选择足迹城市">
+        {
+          places.map((place, index) => (
+            <button
+              type="button"
+              data-city-index={index}
+              aria-pressed={index === 0}
+            >
+              {place.name}
+              {place.residence && <small>{place.residence}</small>}
+            </button>
+          ))
+        }
+      </div>
+      <div class="city-story" aria-live="polite">
+        <span class="eyebrow">中国 / CHINA</span><h3 data-city-name>武汉</h3><p
+          data-city-kinds
+        >
+          现居 · 旅行
+        </p><p data-city-description>{places[0].description}</p>
+      </div>
+      <p class="globe-note">每座城市的故事，留待慢慢补上。</p>
+    </div>
+  </div>
+  <noscript
+    ><p>
+      武汉：现居、旅行；成都：曾居、旅行；洛阳、合肥、安阳：旅行足迹。
+    </p></noscript
+  >
+</section>
+<script>
+  import { initGlobes } from "@/scripts/globe";
+  initGlobes();
+  document.addEventListener("astro:page-load", initGlobes);
+</script>

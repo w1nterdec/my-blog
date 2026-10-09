@@ -19,6 +19,11 @@ export interface UIStrings {
     editPage: string;
     previousPost: string;
     nextPost: string;
+    copy: string;
+    copied: string;
+    zoomImage: string;
+    imagePreview: string;
+    closeImagePreview: string;
   };
   pagination: {
     prev: string;

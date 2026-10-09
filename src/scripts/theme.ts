@@ -1,69 +1,62 @@
-const THEME_KEY = "theme";
-const LIGHT = "light";
-const DARK = "dark";
-
-function getPreferredTheme(): string {
-  const stored = localStorage.getItem(THEME_KEY);
-  if (stored) return stored;
-  return window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? DARK
-    : LIGHT;
+type Preference = "light" | "dark" | "system";
+const media = window.matchMedia("(prefers-color-scheme: dark)");
+function readPreference(): Preference {
+  try {
+    const value = localStorage.getItem("theme");
+    return value === "light" || value === "dark" ? value : "system";
+  } catch {
+    return "system";
+  }
 }
-
-// Reuse the value already set by the inline FOUC-prevention script if available.
-let themeValue: string =
-  (window as unknown as { __theme?: { value: string } }).__theme?.value ??
-  getPreferredTheme();
-
-function persist(): void {
-  localStorage.setItem(THEME_KEY, themeValue);
-  reflect();
-}
-
-function reflect(): void {
-  const root = document.firstElementChild;
-  root?.setAttribute("data-theme", themeValue);
-  root?.classList.toggle("dark", themeValue === DARK);
-  document.querySelector("#theme-btn")?.setAttribute("aria-label", themeValue);
-
-  // Fill <meta name="theme-color"> with the computed background colour so
-  // Android's browser chrome matches the page background.
-  const bg = window.getComputedStyle(document.body).backgroundColor;
+let preference = readPreference();
+const resolve = () =>
+  preference === "system" ? (media.matches ? "dark" : "light") : preference;
+function reflect() {
+  const root = document.documentElement;
+  const theme = resolve();
+  root.dataset.theme = theme;
+  root.dataset.themePreference = preference;
+  root.classList.toggle("dark", theme === "dark");
+  root.style.colorScheme = theme;
+  const select = document.querySelector<HTMLSelectElement>("#theme-select");
+  if (select) select.value = preference;
   document
-    .querySelector("meta[name='theme-color']")
-    ?.setAttribute("content", bg);
+    .querySelector("meta[name=theme-color]")
+    ?.setAttribute(
+      "content",
+      getComputedStyle(root).getPropertyValue("--background").trim()
+    );
+  document.dispatchEvent(new CustomEvent("site:theme-change"));
 }
-
-function setup(): void {
+function setup() {
   reflect();
-  document.querySelector("#theme-btn")?.addEventListener("click", () => {
-    themeValue = themeValue === LIGHT ? DARK : LIGHT;
-    persist();
+  const select = document.querySelector<HTMLSelectElement>("#theme-select");
+  if (!select || select.dataset.bound) return;
+  select.dataset.bound = "true";
+  select.addEventListener("change", () => {
+    preference = select.value as Preference;
+    try {
+      localStorage.setItem("theme", preference);
+    } catch {
+      /* Theme works without storage. */
+    }
+    reflect();
   });
 }
-
 setup();
-
-// Re-run after View Transitions navigation.
 document.addEventListener("astro:after-swap", setup);
-
-// Carry the theme-color value across View Transitions to prevent the
-// Android navigation bar from flashing during page transitions.
 document.addEventListener("astro:before-swap", event => {
-  const color = document
-    .querySelector("meta[name='theme-color']")
-    ?.getAttribute("content");
-  if (color) {
-    (event as { newDocument: Document }).newDocument
-      .querySelector("meta[name='theme-color']")
-      ?.setAttribute("content", color);
+  const incoming = (event as unknown as { newDocument: Document }).newDocument;
+  incoming.documentElement.dataset.theme = resolve();
+  incoming.documentElement.classList.toggle("dark", resolve() === "dark");
+  incoming.documentElement.style.colorScheme = resolve();
+});
+media.addEventListener("change", () => {
+  if (preference === "system") reflect();
+});
+window.addEventListener("storage", event => {
+  if (event.key === "theme") {
+    preference = readPreference();
+    reflect();
   }
 });
-
-// Sync with OS-level dark/light preference changes.
-window
-  .matchMedia("(prefers-color-scheme: dark)")
-  .addEventListener("change", ({ matches }) => {
-    themeValue = matches ? DARK : LIGHT;
-    persist();
-  });

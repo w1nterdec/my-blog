@@ -14,7 +14,11 @@ const currentYear = new Date().getFullYear();
 ---
 
 <footer
-  class:list={["app-layout", { "mt-auto": !noMarginTop }, className]}
+  class:list={[
+    "wide-layout site-footer",
+    { "mt-auto": !noMarginTop },
+    className,
+  ]}
   {...attrs}
 >
   <div
