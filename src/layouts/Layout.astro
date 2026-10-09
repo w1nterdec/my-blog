@@ -4,6 +4,9 @@ import { getRelativeLocaleUrl } from "astro:i18n";
 import { resolveDefaultOgImagePath } from "@/utils/resolveDefaultOgImagePath";
 import { getAssetPath } from "@/utils/withBase";
 import config from "@/config";
+import { localize } from "@/i18n/site";
+import { stripBase, stripLocale } from "@/utils/withBase";
+import Xiaohei from "@/components/Xiaohei.astro";
 import "@/styles/global.css";
 
 type Props = {
@@ -14,10 +17,22 @@ type Props = {
 };
 
 const { site } = config;
+const locale = Astro.currentLocale ?? site.lang;
+const s = localize(locale);
+const logicalPath = stripLocale(stripBase(Astro.url.pathname), locale).replace(
+  /^\/+/,
+  ""
+);
+const alternateUrl = (lang: string) =>
+  logicalPath.startsWith("404")
+    ? lang === "en"
+      ? getRelativeLocaleUrl("en", "404")
+      : "/404.html"
+    : getRelativeLocaleUrl(lang, logicalPath);
 
 const {
-  title = site.title,
-  description = site.description,
+  title = s(site.title),
+  description = s(site.description),
   ogImage = resolveDefaultOgImagePath(config),
   canonicalURL = new URL(Astro.url.pathname, Astro.site).href,
 } = Astro.props;
@@ -41,21 +56,41 @@ const rssHref = getRelativeLocaleUrl(
     <link
       rel="icon"
       type="image/x-icon"
-      href={`${getAssetPath("favicon.ico")}?v=zhixing-2`}
+      href={`${getAssetPath("favicon.ico")}?v=xiaohei-3`}
     />
     <link
       rel="icon"
       type="image/png"
       sizes="128x128"
-      href={`${getAssetPath("favicon.png")}?v=zhixing-2`}
+      href={`${getAssetPath("favicon.png")}?v=xiaohei-3`}
     />
     <link
       rel="icon"
       type="image/svg+xml"
       sizes="any"
-      href={`${getAssetPath("favicon.svg")}?v=zhixing-2`}
+      href={`${getAssetPath("favicon.svg")}?v=xiaohei-3`}
     />
     <link rel="canonical" href={canonicalURL} />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href={`${getAssetPath("apple-touch-icon.png")}?v=xiaohei-3`}
+    />
+    <link
+      rel="alternate"
+      hreflang="zh-CN"
+      href={new URL(alternateUrl("zh-CN"), Astro.site).href}
+    />
+    <link
+      rel="alternate"
+      hreflang="en"
+      href={new URL(alternateUrl("en"), Astro.site).href}
+    />
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href={new URL(alternateUrl("zh-CN"), Astro.site).href}
+    />
     <meta name="generator" content={Astro.generator} />
 
     <!-- Primary meta -->
@@ -67,7 +102,8 @@ const rssHref = getRelativeLocaleUrl(
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content={site.title} />
+    <meta property="og:site_name" content={s(site.title)} />
+    <meta property="og:locale" content={locale === "en" ? "en_US" : "zh_CN"} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalURL} />
@@ -84,7 +120,7 @@ const rssHref = getRelativeLocaleUrl(
     <link
       rel="alternate"
       type="application/rss+xml"
-      title={site.title}
+      title={s(site.title)}
       href={new URL(rssHref, Astro.site)}
     />
 
@@ -137,9 +173,11 @@ const rssHref = getRelativeLocaleUrl(
     class="bg-background font-app text-foreground selection:bg-accent/75 selection:text-accent-foreground flex min-h-svh flex-col"
   >
     <slot />
+    <Xiaohei mode="companion" />
     <script>
       import "@/scripts/theme";
       import "@/scripts/motion";
+      import "@/scripts/xiaohei";
     </script>
   </body>
 </html>

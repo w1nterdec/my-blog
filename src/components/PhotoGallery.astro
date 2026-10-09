@@ -1,17 +1,19 @@
 ---
+import { localize } from "@/i18n/site";
+const s = localize(Astro.currentLocale);
 import { photos, personal } from "@/data/personal";
 import { getAssetPath } from "@/utils/withBase";
 ---
 
-<section class="photo-gallery" aria-label="摄影作品">
+<section class="photo-gallery" aria-label={s("摄影作品")}>
   {
     photos.length ? (
       <>
-        <div class="gallery-filters" role="group" aria-label="摄影分类">
+        <div class="gallery-filters" role="group" aria-label={s("摄影分类")}>
           {["全部", "人像", "猫犬"].map((label, i) => (
             <button
               type="button"
-              data-photo-filter={label}
+              data-photo-filter={s(label)}
               aria-pressed={i === 0}
             >
               {label}
@@ -28,7 +30,7 @@ import { getAssetPath } from "@/utils/withBase";
               data-photo-src={getAssetPath(photo.src)}
               data-photo-alt={photo.alt}
               data-photo-title={photo.title}
-              aria-label={`查看照片：${photo.title}`}
+              aria-label={`${s("查看照片")}: ${photo.title}`}
             >
               <img
                 src={getAssetPath(photo.src)}
@@ -38,27 +40,39 @@ import { getAssetPath } from "@/utils/withBase";
               />
               <span class="photo-caption">
                 <strong>{photo.title}</strong>
-                <span>{photo.location ?? photo.category}</span>
+                <span>{photo.location ?? s(photo.category)}</span>
               </span>
             </button>
           ))}
         </div>
-        <dialog class="photo-dialog" aria-label="照片预览">
+        <dialog class="photo-dialog" aria-label={s("照片预览")}>
           <div class="photo-dialog-controls">
             <>
               <span data-photo-counter />
-              <button type="button" data-photo-close aria-label="关闭照片预览">
-                关闭 ×
+              <button
+                type="button"
+                data-photo-close
+                aria-label={s("关闭照片预览")}
+              >
+                {s("关闭 ×")}
               </button>
             </>
           </div>
           <div class="photo-viewer">
             <>
-              <button type="button" data-photo-prev aria-label="上一张照片">
+              <button
+                type="button"
+                data-photo-prev
+                aria-label={s("上一张照片")}
+              >
                 ←
               </button>
               <img data-photo-large alt="" />
-              <button type="button" data-photo-next aria-label="下一张照片">
+              <button
+                type="button"
+                data-photo-next
+                aria-label={s("下一张照片")}
+              >
                 →
               </button>
             </>
@@ -72,34 +86,36 @@ import { getAssetPath } from "@/utils/withBase";
           <>
             <img
               src={getAssetPath(personal.avatar)}
-              alt="临时封面：w1nter 的 GitHub 头像"
+              alt={s("临时封面：w1nter 的 GitHub 头像")}
               width="460"
               height="460"
             />
-            <span>临时封面 / GitHub 头像</span>
+            <span>{s("临时封面 / GitHub 头像")}</span>
           </>
         </div>
         <div class="gallery-intro">
           <>
-            <span class="eyebrow">光影慢慢收集</span>
-            <h2>看见，也留下。</h2>
+            <span class="eyebrow">{s("光影慢慢收集")}</span>
+            <h2>{s("看见，也留下。")}</h2>
             <p>
-              一些人像，一些偶遇的猫狗，还有家里的猫。真实作品正在整理，先为它们留一个安静的位置。
+              {s(
+                "一些人像，一些偶遇的猫狗，还有家里的猫。真实作品正在整理，先为它们留一个安静的位置。"
+              )}
             </p>
             <div class="photo-categories">
               <>
                 <div>
                   <>
                     <span>01 / PORTRAITS</span>
-                    <h3>人像</h3>
-                    <p>留住人与光相遇的瞬间。</p>
+                    <h3>{s("人像")}</h3>
+                    <p>{s("留住人与光相遇的瞬间。")}</p>
                   </>
                 </div>
                 <div>
                   <>
                     <span>02 / CATS & DOGS</span>
-                    <h3>猫犬</h3>
-                    <p>偶遇的毛茸茸，和家里的猫。</p>
+                    <h3>{s("猫犬")}</h3>
+                    <p>{s("偶遇的毛茸茸，和家里的猫。")}</p>
                   </>
                 </div>
               </>

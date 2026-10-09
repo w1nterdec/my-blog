@@ -16,6 +16,7 @@ import BackToTopButton from "./_components/BackToTopButton.astro";
 import AdjacentPostNav from "./_components/AdjacentPostNav.astro";
 import config from "@/config";
 import { useTranslations } from "@/i18n";
+import { localize } from "@/i18n/site";
 
 export async function getStaticPaths() {
   const posts = await getCollection("posts");
@@ -62,6 +63,7 @@ type Props = {
 const { post, prevPost, nextPost } = Astro.props;
 const locale = Astro.currentLocale ?? config.site.lang;
 const t = useTranslations(locale);
+const s = localize(locale);
 
 const {
   title,
@@ -99,7 +101,7 @@ const ogImage = ogImageUrl
 ---
 
 <PostLayout
-  title={`${title} | ${config.site.title}`}
+  title={`${title} | ${s(config.site.title)}`}
   description={description}
   ogImage={ogImage}
   canonicalURL={canonicalURL}
@@ -141,8 +143,17 @@ const ogImage = ogImageUrl
       <EditPost {hideEditPost} {post} class="max-sm:hidden" />
     </div>
 
+    {
+      locale === "en" && (
+        <p class="text-muted-foreground my-4 text-sm">
+          This entry is available in its original Chinese. Navigation and
+          reading tools are in English.
+        </p>
+      )
+    }
     <article
       id="article"
+      lang="zh-CN"
       class:list={[
         "mt-8 w-full",
         "app-prose max-w-app",

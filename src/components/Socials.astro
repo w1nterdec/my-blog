@@ -13,7 +13,11 @@ const items = await Promise.all(
     const mod = await icons[`/src/assets/icons/socials/${name}.svg`]?.();
     const Icon = mod?.default;
     const title =
-      linkTitle ??
+      (Astro.currentLocale === "en"
+        ? name === "mail"
+          ? "Email w1nter"
+          : `w1nter on ${name === "github" ? "GitHub" : "X"}`
+        : linkTitle) ??
       (url.startsWith("mailto:") || name === "mail"
         ? `Send an email to ${site.title}`
         : `${site.title} on ${name.charAt(0).toUpperCase() + name.slice(1)}`);

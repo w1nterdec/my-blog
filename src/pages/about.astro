@@ -1,4 +1,6 @@
 ---
+import { localize } from "@/i18n/site";
+const s = localize(Astro.currentLocale);
 import { getEntry, render } from "astro:content";
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
@@ -7,13 +9,16 @@ import TravelGlobe from "@/components/TravelGlobe.astro";
 import { personal } from "@/data/personal";
 import { getAssetPath } from "@/utils/withBase";
 import config from "@/config";
-const about = await getEntry("pages", "about");
+const about = await getEntry(
+  "pages",
+  Astro.currentLocale === "en" ? "about-en" : "about"
+);
 if (!about) throw new Error("Missing about content");
 const { Content } = await render(about);
 ---
 
 <Layout
-  title={about.data.title + " | " + config.site.title}
+  title={about.data.title + " | " + s(config.site.title)}
   description={about.data.description}
   ogImage={about.data.ogImage}
   canonicalURL={about.data.canonicalURL}
@@ -26,24 +31,27 @@ const { Content } = await render(about);
           src={getAssetPath(personal.avatar)}
           width="112"
           height="112"
-          alt="w1nter 的 GitHub 头像"
+          alt={s("w1nter 的 GitHub 头像")}
         /><div>
-          <span class="eyebrow">HELLO / 很高兴你来到这里</span><h1>
-            我是 {personal.name}<span class="title-dot">.</span>
+          <span class="eyebrow">{s("HELLO / 很高兴你来到这里")}</span><h1>
+            {s("我是")}
+            {personal.name}<span class="title-dot">.</span>
           </h1><p class="signature">{personal.signature}</p>
         </div>
       </div>
       <div class="about-status">
-        <span class="eyebrow">此刻，在武汉</span><p>{personal.status}</p><a
+        <span class="eyebrow">{s("此刻，在武汉")}</span><p>
+          {s(personal.status)}
+        </p><a
           class="text-link"
           href={personal.project.url}
           target="_blank"
-          rel="noopener noreferrer">techrag-lab · 进行中 ↗</a
+          rel="noopener noreferrer">{s("techrag-lab · 进行中 ↗")}</a
         >
       </div>
     </section>
     <TravelGlobe />
-    <section class="about-copy app-prose reveal" aria-label="个人介绍">
+    <section class="about-copy app-prose reveal" aria-label={s("个人介绍")}>
       <Content />
     </section>
   </main>

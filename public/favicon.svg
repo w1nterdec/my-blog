@@ -1,8 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
-  <title>知行博客</title>
-  <rect width="128" height="128" rx="24" fill="#526b45" />
-  <g fill="none" stroke="#fff" stroke-width="8" stroke-linecap="square" stroke-linejoin="miter">
-    <path d="M34 28 25 44 M32 38h31 M23 63h42 M45 38v27c0 18-8 29-22 37 M45 73l19 24" />
-    <path d="M79 40h25v52H79z" />
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <title>Xiaohei · 知行博客</title>
+  <rect width="32" height="32" rx="8" fill="#f5f3eb"/>
+  <path fill="#708366" d="M4 3h3v2h2v2h14V5h2V3h3v18h-2v5h-3v3H9v-3H6v-5H4z"/>
+  <path fill="#18221e" d="M5 4h2v3h3v3h12V7h3V4h2v16h-2v5h-3v3H10v-3H7v-5H5z"/>
+  <path fill="#52634f" d="M7 8h2v4H7zm16 0h2v4h-2z"/>
+  <path fill="#b8df99" d="M9 14h5v7H9zm9 0h5v7h-5z"/>
+  <path fill="#101c17" d="M12 15h2v5h-2zm9 0h2v5h-2z"/>
+  <path fill="#ecf5df" d="M9 14h1v2H9zm9 0h1v2h-1z"/>
+  <path fill="#819482" d="M15 23h2v1h-2z"/>
 </svg>

@@ -1,4 +1,6 @@
 ---
+import { localize } from "@/i18n/site";
+const s = localize(Astro.currentLocale);
 import type { GetStaticPaths } from "astro";
 import { getCollection } from "astro:content";
 import Layout from "@/layouts/Layout.astro";
@@ -23,7 +25,7 @@ const locale = Astro.currentLocale ?? config.site.lang;
 const t = useTranslations(locale);
 ---
 
-<Layout title={`${t.pages.postsTitle} | ${config.site.title}`}>
+<Layout title={`${t.pages.postsTitle} | ${s(config.site.title)}`}>
   <Header />
 
   <Breadcrumb />
@@ -32,7 +34,7 @@ const t = useTranslations(locale);
     {
       page.data.length === 0 && (
         <p class="text-muted-foreground my-8">
-          还没有发表文章，文字正在慢慢积累。
+          {s("还没有发表文章，文字正在慢慢积累。")}
         </p>
       )
     }

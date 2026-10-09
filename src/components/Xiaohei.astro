@@ -1,0 +1,155 @@
+---
+import { localize } from "@/i18n/site";
+const s = localize(Astro.currentLocale);
+type Props = { mode: "header" | "garden" | "companion" };
+const { mode } = Astro.props;
+---
+
+{
+  mode === "header" && (
+    <button
+      class="xiaohei-header xiaohei-sprite"
+      type="button"
+      data-xiaohei-header
+      aria-label={s("认识小黑，打开互动气泡")}
+      aria-expanded="false"
+      aria-controls="xiaohei-bubble"
+      hidden
+    >
+      <canvas width="48" height="44" aria-hidden="true" />
+    </button>
+  )
+}
+{
+  mode === "garden" && (
+    <section
+      class="xiaohei-garden"
+      data-xiaohei-garden
+      data-pagefind-ignore
+      aria-label={s("小黑的散步时间")}
+      hidden
+    >
+      <div class="xiaohei-garden-heading">
+        <div>
+          <>
+            <span class="eyebrow">{s("慢一点，也很好")}</span>
+            <p>{s("小黑的散步时间")}</p>
+          </>
+        </div>
+        <button type="button" data-xiaohei-call>
+          {s("叫小黑过来")}
+          <span aria-hidden="true">↙</span>
+        </button>
+      </div>
+      <div class="xiaohei-meadow" data-xiaohei-meadow>
+        <canvas
+          class="xiaohei-landscape"
+          data-xiaohei-landscape
+          aria-hidden="true"
+        />
+        <span class="xiaohei-moon" aria-hidden="true" />
+        <span class="xiaohei-grass xiaohei-grass-a" aria-hidden="true">
+          ⌁
+        </span>
+        <span class="xiaohei-grass xiaohei-grass-b" aria-hidden="true">
+          ⌁
+        </span>
+        <span class="xiaohei-grass xiaohei-grass-c" aria-hidden="true">
+          ⌁
+        </span>
+        <button
+          class="xiaohei-walker xiaohei-sprite"
+          data-xiaohei-walker
+          type="button"
+          aria-label={s("摸摸小黑，打开互动气泡")}
+          aria-expanded="false"
+          aria-controls="xiaohei-bubble"
+        >
+          <canvas width="48" height="44" aria-hidden="true" />
+        </button>
+        <span class="xiaohei-garden-hint">{s("点点空地，带它散个步。")}</span>
+      </div>
+      <p class="xiaohei-garden-note">
+        <>
+          <span data-xiaohei-status>{s("正在等你")}</span>
+          <span>{s("路过，也可以停一会儿。")}</span>
+        </>
+      </p>
+    </section>
+  )
+}
+{
+  mode === "companion" && (
+    <div data-xiaohei-root data-pagefind-ignore>
+      <div class="xiaohei-companion" data-xiaohei-companion hidden>
+        <button
+          class="xiaohei-companion-cat xiaohei-sprite"
+          data-xiaohei-companion-cat
+          type="button"
+          aria-label={s("摸摸陪读的小黑，打开互动气泡")}
+          aria-expanded="false"
+          aria-controls="xiaohei-bubble"
+        >
+          <canvas width="48" height="44" aria-hidden="true" />
+        </button>
+        <button
+          class="xiaohei-send-home"
+          data-xiaohei-home
+          type="button"
+          aria-label={s("送小黑回页底")}
+          title={s("回到小院")}
+        >
+          ↘
+        </button>
+      </div>
+      <section
+        class="xiaohei-bubble"
+        id="xiaohei-bubble"
+        data-xiaohei-bubble
+        role="dialog"
+        aria-label={s("小黑的互动气泡")}
+        hidden
+      >
+        <div class="xiaohei-bubble-heading">
+          <>
+            <span>
+              <i aria-hidden="true" /> {s("小黑")}{" "}
+              <small data-xiaohei-topic>{s("陪你停一会儿")}</small>
+            </span>
+            <button
+              type="button"
+              data-xiaohei-close
+              aria-label={s("关闭小黑气泡")}
+            >
+              ×
+            </button>
+          </>
+        </div>
+        <p data-xiaohei-message />
+        <div class="xiaohei-bubble-actions">
+          <button type="button" data-xiaohei-pet>
+            {s("摸摸它")}
+            <span aria-hidden="true">♡</span>
+          </button>
+          <button type="button" data-xiaohei-follow aria-pressed="false">
+            {s("陪我读一会儿")}
+          </button>
+          <button type="button" data-xiaohei-quiet aria-pressed="false">
+            {s("少说一点")}
+          </button>
+        </div>
+        <p class="xiaohei-secret">
+          {s("有时，轻轻唤一声")}
+          <kbd>xiaohei</kbd>
+          {s("，它就会来。")}
+        </p>
+      </section>
+      <p
+        class="sr-only"
+        role="status"
+        aria-live="polite"
+        data-xiaohei-announcement
+      />
+    </div>
+  )
+}

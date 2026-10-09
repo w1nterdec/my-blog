@@ -1,4 +1,6 @@
 ---
+import { localize } from "@/i18n/site";
+const s = localize(Astro.currentLocale);
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
@@ -6,17 +8,17 @@ import PhotoGallery from "@/components/PhotoGallery.astro";
 ---
 
 <Layout
-  title="映 · 摄影集 | 知行博客"
-  description="w1nter 的摄影集：人像、偶遇的猫犬与生活中的光影。"
+  title={s("映 · 摄影集 | 知行博客")}
+  description={s("w1nter 的摄影集：人像、偶遇的猫犬与生活中的光影。")}
 >
   <Header />
   <main id="main-content" class="wide-layout photography-page">
     <header class="page-heading reveal">
-      <span class="eyebrow">PHOTOGRAPHY / 光影之间</span><h1
+      <span class="eyebrow">{s("PHOTOGRAPHY / 光影之间")}</span><h1
         class="display-title"
       >
         映<span class="title-dot">.</span>
-      </h1><p>把转瞬即逝，留成可以回望的片刻。</p>
+      </h1><p>{s("把转瞬即逝，留成可以回望的片刻。")}</p>
     </header>
     <PhotoGallery />
   </main>

@@ -1,4 +1,6 @@
 ---
+import { localize } from "@/i18n/site";
+const s = localize(Astro.currentLocale);
 import Socials from "./Socials.astro";
 import { personal, places } from "@/data/personal";
 import { getAssetPath } from "@/utils/withBase";
@@ -7,16 +9,16 @@ import config from "@/config";
 const locale = Astro.currentLocale ?? config.site.lang;
 ---
 
-<aside class="personal-sidebar" aria-label="个人近况">
+<aside class="personal-sidebar" aria-label={s("个人近况")}>
   <section class="profile-panel surface reveal">
     <a
       class="avatar-link"
       href={getRelativeLocaleUrl(locale, "about")}
-      aria-label="认识 w1nter"
+      aria-label={s("认识 w1nter")}
     >
       <img
         src={getAssetPath(personal.avatar)}
-        alt="w1nter 的 GitHub 头像"
+        alt={s("w1nter 的 GitHub 头像")}
         width="88"
         height="88"
       />
@@ -24,19 +26,21 @@ const locale = Astro.currentLocale ?? config.site.lang;
     <h2>{personal.name}</h2>
     <p class="profile-signature">{personal.signature}</p>
     <p class="location-line">
-      <span class="location-dot" aria-hidden="true"></span>{personal.location}
+      <span class="location-dot" aria-hidden="true"></span>{
+        s(personal.location)
+      }
     </p>
     <Socials />
     <a class="text-link" href={getRelativeLocaleUrl(locale, "about")}
-      >关于我 <span aria-hidden="true">↗</span></a
+      >{s("关于我")}<span aria-hidden="true">↗</span></a
     >
   </section>
   <section class="status-panel surface reveal">
     <p class="eyebrow">
-      <span class="status-dot" aria-hidden="true"></span> 此刻 / NOW
+      <span class="status-dot" aria-hidden="true"></span>{s("此刻 / NOW")}
     </p>
-    <h2>生活正在发生</h2>
-    <p>{personal.status}</p>
+    <h2>{s("生活正在发生")}</h2>
+    <p>{s(personal.status)}</p>
   </section>
   <a
     class="project-panel surface reveal"
@@ -45,19 +49,19 @@ const locale = Astro.currentLocale ?? config.site.lang;
     rel="noopener noreferrer"
   >
     <div class="section-top">
-      <span class="eyebrow">一个正在做的项目</span><span class="pill"
-        >进行中</span
+      <span class="eyebrow">{s("一个正在做的项目")}</span><span class="pill"
+        >{s("进行中")}</span
       >
     </div>
     <h2>{personal.project.name}<span aria-hidden="true"> ↗</span></h2>
-    <p>{personal.project.description}</p>
+    <p>{s(personal.project.description)}</p>
     <span class="project-tags">DATASET · FINE-TUNING · RAG</span>
   </a>
   <a
     class="footprint-panel surface reveal"
     href={getRelativeLocaleUrl(locale, "about") + "#footprints"}
   >
-    <span class="eyebrow">留在地图上的记忆</span>
+    <span class="eyebrow">{s("留在地图上的记忆")}</span>
     <div class="footprint-preview" aria-hidden="true">
       <svg viewBox="0 0 240 110" fill="none"
         ><ellipse cx="120" cy="55" rx="79" ry="48"></ellipse><ellipse
@@ -75,8 +79,8 @@ const locale = Astro.currentLocale ?? config.site.lang;
       >
     </div>
     <div class="section-top">
-      <h2>走过的地方</h2><span aria-hidden="true">↗</span>
+      <h2>{s("走过的地方")}</h2><span aria-hidden="true">↗</span>
     </div>
-    <p>中国 · {places.length} 座城市</p>
+    <p>{s("中国")} · {places.length} {s("座城市")}</p>
   </a>
 </aside>

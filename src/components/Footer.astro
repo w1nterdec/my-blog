@@ -1,6 +1,7 @@
 ---
 import type { HTMLAttributes } from "astro/types";
 import Socials from "./Socials.astro";
+import Xiaohei from "./Xiaohei.astro";
 import { useTranslations } from "@/i18n";
 
 type Props = {
@@ -21,6 +22,7 @@ const currentYear = new Date().getFullYear();
   ]}
   {...attrs}
 >
+  <Xiaohei mode="garden" />
   <div
     class="border-border flex flex-col items-center justify-between border-t py-6 sm:flex-row-reverse sm:py-4"
   >

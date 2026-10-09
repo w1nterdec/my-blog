@@ -1,16 +1,19 @@
+import { localize, currentLanguage } from "@/i18n/site";
 import { geoOrthographic, geoPath, geoGraticule10, geoDistance } from "d3-geo";
 import type { GeoPermissibleObjects } from "d3-geo";
 import type { Place } from "@/data/personal";
 
 export function initGlobes() {
+  const s = localize(currentLanguage());
   document.querySelectorAll<HTMLElement>("[data-globe]").forEach(root => {
     if (root.dataset.bound) return;
     root.dataset.bound = "true";
     const canvas = root.querySelector<HTMLCanvasElement>("canvas")!;
     const ctx = canvas.getContext("2d");
     if (!ctx) {
-      root.querySelector(".globe-loading")!.textContent =
-        "当前浏览器不支持地球仪，可使用右侧城市列表。";
+      root.querySelector(".globe-loading")!.textContent = s(
+        "当前浏览器不支持地球仪，可使用右侧城市列表。"
+      );
       return;
     }
     const stage = root.querySelector<HTMLElement>(".globe-stage")!;
@@ -178,7 +181,7 @@ export function initGlobes() {
     function setPlaying(value: boolean) {
       playing = value;
       playButton.setAttribute("aria-pressed", String(value));
-      playButton.textContent = value ? "暂停旋转" : "开始旋转";
+      playButton.textContent = value ? s("暂停旋转") : s("开始旋转");
       if (value && zoom > 1.2) animateTo(rotation, 1);
       schedule();
     }
@@ -203,7 +206,7 @@ export function initGlobes() {
         place.description;
       root.querySelector("[data-city-kinds]")!.textContent = [
         place.residence,
-        place.visited ? "旅行" : "",
+        place.visited ? s("旅行") : "",
       ]
         .filter(Boolean)
         .join(" · ");
@@ -245,8 +248,8 @@ export function initGlobes() {
           String(freeTouch)
         );
         (event.currentTarget as HTMLButtonElement).textContent = freeTouch
-          ? "恢复页面滚动"
-          : "自由拖动";
+          ? s("恢复页面滚动")
+          : s("自由拖动");
         canvas.style.touchAction = freeTouch ? "none" : "pan-y";
       },
       { signal }
@@ -382,7 +385,7 @@ export function initGlobes() {
             .catch(() => {
               if (!signal.aborted)
                 root.querySelector(".globe-loading")!.textContent =
-                  "地图暂未加载，可继续查看城市记录。";
+                  s("地图暂未加载，可继续查看城市记录。");
             });
         }
         if (visible) schedule();

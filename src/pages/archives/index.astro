@@ -1,4 +1,6 @@
 ---
+import { localize } from "@/i18n/site";
+const s = localize(Astro.currentLocale);
 import { getRelativeLocaleUrl } from "astro:i18n";
 import { getCollection } from "astro:content";
 import Layout from "@/layouts/Layout.astro";
@@ -27,7 +29,7 @@ const filteredPosts = posts.filter(postFilter);
 const monthFormatter = new Intl.DateTimeFormat(locale, { month: "long" });
 ---
 
-<Layout title={`${t.pages.archivesTitle} | ${config.site.title}`}>
+<Layout title={`${t.pages.archivesTitle} | ${s(config.site.title)}`}>
   <Header />
 
   <Breadcrumb />
@@ -35,7 +37,9 @@ const monthFormatter = new Intl.DateTimeFormat(locale, { month: "long" });
   <Main pageTitle={t.pages.archivesTitle} pageDesc={t.pages.archivesDesc}>
     {
       filteredPosts.length === 0 && (
-        <p class="text-muted-foreground my-8">还没有归档，期待第一段记录。</p>
+        <p class="text-muted-foreground my-8">
+          {s("还没有归档，期待第一段记录。")}
+        </p>
       )
     }
     {

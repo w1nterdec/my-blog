@@ -1,0 +1,121 @@
+---
+import type { GetStaticPaths } from "astro";
+import type { ComponentProps } from "astro/types";
+import { getCollection } from "astro:content";
+import Home from "../index.astro";
+import About from "../about.astro";
+import Photography from "../photography.astro";
+import Archives from "../archives/index.astro";
+import Search from "../search.astro";
+import Tags from "../tags/index.astro";
+import Posts from "../posts/[...page].astro";
+import TaggedPosts from "../tags/[tag]/[...page].astro";
+import Article from "../posts/[...slug]/index.astro";
+import NotFound from "../404.astro";
+import { getSortedPosts } from "@/utils/getSortedPosts";
+import { getPostSlug } from "@/utils/getPostPaths";
+import { getUniqueTags } from "@/utils/getUniqueTags";
+import { slugifyAll } from "@/utils/slugify";
+import config from "@/config";
+
+// Both locales render the same page components. Only their content differs.
+export const getStaticPaths = (async ({ paginate }) => {
+  const routes: {
+    params: { page: string | undefined };
+    props: Record<string, unknown>;
+  }[] = [
+    { params: { page: undefined }, props: { kind: "home" } },
+    ...["about", "photography", "archives", "search", "tags", "404"].map(
+      path => ({ params: { page: path }, props: { kind: path } })
+    ),
+  ];
+  const posts = getSortedPosts(await getCollection("posts"));
+  const pageUrls = (
+    page: { currentPage: number; lastPage: number },
+    prefix: string
+  ) => {
+    const url = (number: number) =>
+      `/en/${prefix}${number === 1 ? "" : `/${number}`}/`;
+    return {
+      current: url(page.currentPage),
+      prev: page.currentPage > 1 ? url(page.currentPage - 1) : undefined,
+      next:
+        page.currentPage < page.lastPage
+          ? url(page.currentPage + 1)
+          : undefined,
+      first: url(1),
+      last: url(page.lastPage),
+    };
+  };
+  for (const entry of paginate(posts, { pageSize: config.posts.perPage })) {
+    const current = entry.props.page.currentPage;
+    routes.push({
+      params: { page: current === 1 ? "posts" : `posts/${current}` },
+      props: {
+        ...entry.props,
+        page: { ...entry.props.page, url: pageUrls(entry.props.page, "posts") },
+        kind: "posts",
+      },
+    });
+  }
+  for (const { tag, tagName } of getUniqueTags(posts)) {
+    for (const entry of paginate(
+      posts.filter(post => slugifyAll(post.data.tags).includes(tag)),
+      { pageSize: config.posts.perPage }
+    )) {
+      const current = entry.props.page.currentPage;
+      routes.push({
+        params: { page: `tags/${tag}${current === 1 ? "" : `/${current}`}` },
+        props: {
+          ...entry.props,
+          page: {
+            ...entry.props.page,
+            url: pageUrls(entry.props.page, `tags/${tag}`),
+          },
+          kind: "tag",
+          tagName,
+        },
+      });
+    }
+  }
+  const adjacent = (index: number) =>
+    posts[index]
+      ? {
+          id: posts[index].id,
+          title: posts[index].data.title,
+          filePath: posts[index].filePath,
+        }
+      : null;
+  posts.forEach((post, index) =>
+    routes.push({
+      params: { page: `posts${getPostSlug(post.id, post.filePath)}` },
+      props: {
+        kind: "article",
+        post,
+        prevPost: adjacent(index + 1),
+        nextPost: adjacent(index - 1),
+      },
+    })
+  );
+  return routes;
+}) satisfies GetStaticPaths;
+const views = {
+  home: Home,
+  about: About,
+  photography: Photography,
+  archives: Archives,
+  search: Search,
+  tags: Tags,
+  posts: Posts,
+  tag: TaggedPosts,
+  article: Article,
+  "404": NotFound,
+};
+const { kind } = Astro.props;
+// getStaticPaths supplies the matching view's required props for every route.
+const props = Astro.props as ComponentProps<typeof Posts> &
+  ComponentProps<typeof Article> & { tagName: string };
+const View = views[kind as keyof typeof views];
+---
+
+<View {...props} />

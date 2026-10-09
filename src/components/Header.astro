@@ -1,8 +1,11 @@
 ---
 import { getRelativeLocaleUrl } from "astro:i18n";
 import { stripBase, stripLocale } from "@/utils/withBase";
+import { localize } from "@/i18n/site";
 import config from "@/config";
+import Xiaohei from "./Xiaohei.astro";
 const locale = Astro.currentLocale ?? config.site.lang;
+const s = localize(locale);
 const path = stripLocale(stripBase(Astro.url.pathname), locale);
 const links = [
   { label: "首页", route: "" },
@@ -16,42 +19,77 @@ const links = [
 ];
 ---
 
-<a class="skip-link" href="#main-content">跳转到正文</a>
-<header class="site-header">
+<a class="skip-link" href="#main-content">{s("跳转到正文")}</a>
+<header class="site-header" data-site-header>
   <div class="wide-layout header-inner">
-    <a class="site-brand" href={getRelativeLocaleUrl(locale, "")}
-      ><span class="brand-mark" aria-hidden="true">知</span><span
-        >{config.site.title}<small>记录 · 生活 · 探索</small></span
-      ></a
-    >
-    <nav class="site-nav" id="site-nav" aria-label="主导航">
+    <a class="site-brand" href={getRelativeLocaleUrl(locale, "")}>
+      <span class="brand-mark" aria-hidden="true">知</span>
+      <span>{s(config.site.title)}<small>{s("记录 · 生活 · 探索")}</small></span
+      >
+    </a>
+    <nav class="site-nav" id="site-nav" aria-label={s("主导航")}>
       {
-        links.map(link => {
-          const active = link.route
-            ? path.startsWith("/" + link.route)
-            : path === "/";
-          return (
-            <a
-              href={getRelativeLocaleUrl(locale, link.route)}
-              aria-current={active ? "page" : undefined}
-            >
-              {link.label}
-            </a>
-          );
-        })
+        links.map(link => (
+          <a
+            href={getRelativeLocaleUrl(locale, link.route)}
+            aria-current={
+              (link.route ? path.startsWith("/" + link.route) : path === "/")
+                ? "page"
+                : undefined
+            }
+          >
+            {s(link.label)}
+          </a>
+        ))
       }
     </nav>
     <div class="header-tools">
+      <details class="language-picker" data-language-picker>
+        <summary aria-label={s("选择语言")}
+          ><span aria-hidden="true">◎</span>
+          <span>{locale === "en" ? "EN" : "中"}</span><span
+            class="control-caret"
+            aria-hidden="true">⌄</span
+          ></summary
+        >
+        <div class="language-options">
+          {
+            [
+              { lang: "zh-CN", label: "中文" },
+              { lang: "en", label: "English" },
+            ].map(item => (
+              <a
+                href={
+                  path.startsWith("/404")
+                    ? item.lang === "en"
+                      ? getRelativeLocaleUrl("en", "404")
+                      : "/404.html"
+                    : getRelativeLocaleUrl(item.lang, path.replace(/^\/+/, ""))
+                }
+                lang={item.lang}
+                hreflang={item.lang}
+                data-language-switch
+                aria-current={locale === item.lang ? "true" : undefined}
+              >
+                {item.label}
+                <span aria-hidden="true">
+                  {locale === item.lang ? "✓" : ""}
+                </span>
+              </a>
+            ))
+          }
+        </div>
+      </details>
       {
         config.features.lightAndDarkMode && (
           <label class="theme-control">
             <>
               <span aria-hidden="true">◐</span>
-              <select id="theme-select" aria-label="显示主题">
+              <select id="theme-select" aria-label={s("显示主题")}>
                 <>
-                  <option value="system">跟随系统</option>
-                  <option value="light">浅色</option>
-                  <option value="dark">深色</option>
+                  <option value="system">{s("跟随系统")}</option>
+                  <option value="light">{s("浅色")}</option>
+                  <option value="dark">{s("深色")}</option>
                 </>
               </select>
             </>
@@ -62,47 +100,14 @@ const links = [
         type="button"
         id="menu-btn"
         class="mobile-menu-button"
-        aria-label="展开菜单"
+        aria-label={s("展开菜单")}
         aria-expanded="false"
         aria-controls="site-nav"><span aria-hidden="true">☰</span></button
       >
     </div>
+    <div class="header-rail" data-xiaohei-rail><Xiaohei mode="header" /></div>
   </div>
 </header>
 <script>
-  function initNavigation() {
-    const button = document.querySelector<HTMLButtonElement>("#menu-btn");
-    const nav = document.querySelector<HTMLElement>("#site-nav");
-    if (!button || !nav || button.dataset.bound) return;
-    button.dataset.bound = "true";
-    const setOpen = (open: boolean) => {
-      button.setAttribute("aria-expanded", String(open));
-      button.setAttribute("aria-label", open ? "收起菜单" : "展开菜单");
-      nav.classList.toggle("is-open", open);
-    };
-    button.addEventListener("click", () =>
-      setOpen(button.getAttribute("aria-expanded") !== "true")
-    );
-    nav.addEventListener("keydown", event => {
-      if (event.key === "Escape") {
-        setOpen(false);
-        button.focus();
-      }
-    });
-    nav
-      .querySelectorAll("a")
-      .forEach(link => link.addEventListener("click", () => setOpen(false)));
-    document
-      .querySelector<HTMLAnchorElement>(".skip-link")
-      ?.addEventListener("click", () => {
-        const main = document.getElementById("main-content");
-        main?.setAttribute("tabindex", "-1");
-        main?.focus();
-        main?.addEventListener("blur", () => main.removeAttribute("tabindex"), {
-          once: true,
-        });
-      });
-  }
-  initNavigation();
-  document.addEventListener("astro:page-load", initNavigation);
+  import "@/scripts/navigation";
 </script>

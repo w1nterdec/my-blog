@@ -1,4 +1,6 @@
 ---
+import { localize } from "@/i18n/site";
+const s = localize(Astro.currentLocale);
 import { getRelativeLocaleUrl } from "astro:i18n";
 import { getCollection } from "astro:content";
 import { postFilter } from "@/utils/postFilter";
@@ -30,7 +32,7 @@ const t = useTranslations(locale);
 const hasPosts = (await getCollection("posts")).some(postFilter);
 ---
 
-<Layout title={`${t.pages.searchTitle} | ${config.site.title}`}>
+<Layout title={`${t.pages.searchTitle} | ${s(config.site.title)}`}>
   <Header />
 
   <Breadcrumb />
@@ -40,14 +42,13 @@ const hasPosts = (await getCollection("posts")).some(postFilter);
       hasPosts ? (
         <div
           id="pagefind-search"
-          transition:persist
           data-backurl={backUrl}
           data-bundle-path={pagefindBundlePath}
           data-search-placeholder={t.a11y.searchPlaceholder}
         />
       ) : (
         <p class="text-muted-foreground my-8">
-          还没有可搜索的文章，发表后就可以在这里查找。
+          {s("还没有可搜索的文章，发表后就可以在这里查找。")}
         </p>
       )
     }
@@ -71,14 +72,16 @@ const hasPosts = (await getCollection("posts")).some(postFilter);
     const onIdle = window.requestIdleCallback || (cb => setTimeout(cb, 1));
 
     onIdle(async () => {
+      const en = document.documentElement.lang === "en";
       // @ts-expect-error — Missing types for @pagefind/default-ui package.
       const { PagefindUI } = await import("@pagefind/default-ui");
+      if (!pageFindSearch.isConnected) return;
 
       // Display warning inn dev mode
       if (import.meta.env.DEV) {
         pageFindSearch.innerHTML = `
             <div class="bg-muted/75 rounded p-4 space-y-4 mb-4">
-              <p><strong>开发模式提示：</strong>请至少构建一次项目，生成搜索索引。文章更新后需要重新构建。</p>
+              <p>${en ? "Build the project once to generate the search index. Rebuild after updating entries." : "开发模式提示：请至少构建一次项目，生成搜索索引。文章更新后需要重新构建。"}</p>
               <code class="block bg-black text-white px-2 py-1 rounded">npm run build</code>
             </div>
           `;
@@ -90,18 +93,31 @@ const hasPosts = (await getCollection("posts")).some(postFilter);
         bundlePath,
         showImages: false,
         showSubResults: true,
-        translations: {
-          placeholder: pageFindSearch.dataset.searchPlaceholder,
-          search_label: "搜索本站文章",
-          clear_search: "清除搜索",
-          load_more: "加载更多",
-          searching: "正在搜索 [SEARCH_TERM]…",
-          zero_results: "没有找到与 [SEARCH_TERM] 相关的文章",
-          one_result: "找到 1 条与 [SEARCH_TERM] 相关的结果",
-          many_results: "找到 [COUNT] 条与 [SEARCH_TERM] 相关的结果",
-          filters_label: "筛选",
-          all_results: "全部结果",
-        },
+        translations: en
+          ? {
+              placeholder: pageFindSearch.dataset.searchPlaceholder,
+              search_label: "Search this journal",
+              clear_search: "Clear search",
+              load_more: "Load more",
+              searching: "Searching for [SEARCH_TERM]…",
+              zero_results: "No entries found for [SEARCH_TERM]",
+              one_result: "1 result for [SEARCH_TERM]",
+              many_results: "[COUNT] results for [SEARCH_TERM]",
+              filters_label: "Filters",
+              all_results: "All results",
+            }
+          : {
+              placeholder: pageFindSearch.dataset.searchPlaceholder,
+              search_label: "搜索本站文章",
+              clear_search: "清除搜索",
+              load_more: "加载更多",
+              searching: "正在搜索 [SEARCH_TERM]…",
+              zero_results: "没有找到与 [SEARCH_TERM] 相关的文章",
+              one_result: "找到 1 条与 [SEARCH_TERM] 相关的结果",
+              many_results: "找到 [COUNT] 条与 [SEARCH_TERM] 相关的结果",
+              filters_label: "筛选",
+              all_results: "全部结果",
+            },
         processTerm: function (term: string) {
           params.set("q", term); // Update the `q` parameter in the URL
           history.replaceState(history.state, "", "?" + params.toString()); // Push the new URL without reloading
