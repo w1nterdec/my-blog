@@ -38,8 +38,23 @@ const rssHref = getRelativeLocaleUrl(
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" type="image/svg+xml" href={getAssetPath("favicon.svg")} />
-    <link rel="icon" type="image/png" href={getAssetPath("favicon.png")} />
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href={`${getAssetPath("favicon.ico")}?v=zhixing-2`}
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="128x128"
+      href={`${getAssetPath("favicon.png")}?v=zhixing-2`}
+    />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      sizes="any"
+      href={`${getAssetPath("favicon.svg")}?v=zhixing-2`}
+    />
     <link rel="canonical" href={canonicalURL} />
     <meta name="generator" content={Astro.generator} />
 
