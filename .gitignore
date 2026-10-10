@@ -25,6 +25,7 @@ src/content/posts/imported/
 src/data/generated/
 *.pem
 *.key
+sealed-content-settings.json
 
 # macOS-specific files
 .DS_Store

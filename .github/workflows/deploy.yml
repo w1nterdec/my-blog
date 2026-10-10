@@ -6,7 +6,7 @@ on:
     inputs:
       operation:
         type: choice
-        options: [inspect, deploy]
+        options: [inspect, bootstrap, deploy]
         default: inspect
 permissions:
   contents: read
@@ -36,6 +36,28 @@ jobs:
             grep -R -E 'server_name|listen |root |try_files|ssl_certificate|error_page' /etc/nginx/sites-enabled /etc/nginx/conf.d 2>/dev/null || true
             ls -ld /etc/nginx /var/www/astro-blog /opt /usr/local/bin 2>/dev/null || true
             command -v node || true
+  bootstrap:
+    if: github.event_name == 'workflow_dispatch' && inputs.operation == 'bootstrap' && github.actor == 'w1nterdec'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - run: npm install --prefix "$RUNNER_TEMP/sealed-box" libsodium-wrappers@0.7.15 --ignore-scripts --no-audit --no-fund
+      - name: Seal deployment settings for private content repository
+        run: node scripts/seal-deploy-settings.mjs
+        env:
+          ECS_HOST: ${{ secrets.ECS_HOST }}
+          ECS_USER: ${{ secrets.ECS_USER }}
+          ECS_PORT: ${{ secrets.ECS_PORT }}
+          ECS_SSH_KEY: ${{ secrets.ECS_SSH_KEY }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sealed-content-settings
+          path: sealed-content-settings.json
+          retention-days: 1
   build-and-deploy:
     if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || inputs.operation == 'deploy')
     runs-on: ubuntu-latest
