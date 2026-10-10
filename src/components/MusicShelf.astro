@@ -116,7 +116,11 @@ const external = (value?: string) => {
                 <span class="record-initial">{item.artist.slice(0, 1)}</span>
               </div>
             )}
-            <span class="record-cover-label">{item.title ?? item.artist}</span>
+            {!item.cover && (
+              <span class="record-cover-label">
+                {item.title ?? item.artist}
+              </span>
+            )}
           </button>
           <div class="record-info">
             <p class="eyebrow">
