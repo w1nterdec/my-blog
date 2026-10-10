@@ -15,117 +15,214 @@ const s = localize(Astro.currentLocale);
   >
     <svg viewBox="0 0 120 110" fill="none" aria-hidden="true">
       <defs>
-        <radialGradient id="hamster-fur" cx=".36" cy=".25" r=".8">
-          <stop stop-color="#edd0a5"></stop><stop
-            offset=".62"
-            stop-color="#cba373"></stop><stop offset="1" stop-color="#a77c54"
-          ></stop>
-        </radialGradient>
-        <radialGradient id="hamster-cream" cx=".5" cy=".25" r=".8">
-          <stop stop-color="#fff8e9"></stop><stop
+        <radialGradient id="hamster-fur" cx=".4" cy=".3" r=".8"
+          ><stop stop-color="#f0ddbd"></stop><stop
+            offset=".65"
+            stop-color="#d9bc8e"></stop><stop offset="1" stop-color="#b89165"
+          ></stop></radialGradient
+        >
+        <radialGradient id="hamster-cream" cx=".45" cy=".3" r=".8"
+          ><stop stop-color="#fffdf4"></stop><stop
             offset="1"
-            stop-color="#e9d8bd"></stop>
-        </radialGradient>
+            stop-color="#e5dccb"></stop></radialGradient
+        >
+        <linearGradient
+          id="hamster-cap"
+          x1="20"
+          y1="15"
+          x2="88"
+          y2="49"
+          gradientUnits="userSpaceOnUse"
+          ><stop stop-color="#364564"></stop><stop
+            offset="1"
+            stop-color="#142039"></stop></linearGradient
+        >
+        <linearGradient id="hamster-stone" x1="0" y1="0" x2="1" y2="1"
+          ><stop stop-color="#acb09a"></stop><stop
+            offset="1"
+            stop-color="#686e5e"></stop></linearGradient
+        >
       </defs>
-      <ellipse cx="60" cy="99" rx="35" ry="5" fill="#544536" opacity=".12"
+      <ellipse cx="60" cy="103" rx="30" ry="4" fill="#544536" opacity=".13"
       ></ellipse>
       <g class="hamster-body">
-        <ellipse cx="60" cy="75" rx="34" ry="25" fill="url(#hamster-fur)"
+        <path
+          d="M38 73Q26 60 20 70L34 90M81 77Q89 61 97 60L89 87"
+          stroke="#d8c6a5"
+          stroke-width="11"
+          stroke-linecap="round"></path>
+        <ellipse cx="60" cy="80" rx="24" ry="24" fill="url(#hamster-fur)"
         ></ellipse>
-        <ellipse cx="60" cy="79" rx="23" ry="19" fill="url(#hamster-cream)"
+        <ellipse cx="60" cy="83" rx="18" ry="21" fill="url(#hamster-cream)"
         ></ellipse>
+        <path
+          d="m47 88 2 5m5-3 1 6m9-6-1 6m7-8-2 5"
+          stroke="#fffdf4"
+          stroke-width=".8"
+          stroke-linecap="round"
+          opacity=".65"></path>
         <g
           class="hamster-feet"
-          fill="#dcaaa0"
-          stroke="#ba8a80"
+          fill="#e8b1b0"
+          stroke="#b98686"
           stroke-width=".7"
         >
-          <ellipse cx="39" cy="97" rx="9" ry="4"></ellipse><ellipse
-            cx="81"
-            cy="97"
-            rx="9"
-            ry="4"></ellipse>
-          <path d="m36 96 0 3m5-3 0 3m36-3 0 3m5-3 0 3"></path>
+          <path
+            d="M49 97q-7 1-9 7l6-1 2 4 3-4 6 1-2-7M71 97q7 1 9 7l-6-1-2 4-3-4-6 1 2-7"
+          ></path>
+          <path d="m47 101-2 3m5-4 0 4m23-3 2 3m-5-4 0 4"></path>
         </g>
         <g class="hamster-head">
-          <ellipse
-            cx="34"
-            cy="31"
-            rx="13"
-            ry="15"
-            fill="url(#hamster-fur)"
-            transform="rotate(-20 34 31)"></ellipse>
-          <ellipse
-            cx="86"
-            cy="31"
-            rx="13"
-            ry="15"
-            fill="url(#hamster-fur)"
-            transform="rotate(20 86 31)"></ellipse>
-          <ellipse cx="34" cy="31" rx="8" ry="10" fill="#e9b7af"></ellipse>
-          <ellipse cx="86" cy="31" rx="8" ry="10" fill="#e9b7af"></ellipse>
+          <ellipse cx="35" cy="40" rx="10" ry="12" fill="url(#hamster-fur)"
+          ></ellipse>
+          <ellipse cx="35" cy="40" rx="6" ry="8" fill="#ddb4aa"></ellipse>
+          <ellipse cx="87" cy="40" rx="10" ry="12" fill="url(#hamster-fur)"
+          ></ellipse>
+          <ellipse cx="87" cy="40" rx="6" ry="8" fill="#ddb4aa"></ellipse>
           <path
-            d="M60 27c-22 0-33 11-36 27-6 7-6 21 4 28 8 6 21 4 32 4s24 2 32-4c10-7 10-21 4-28-3-16-14-27-36-27Z"
+            d="M60 33C39 31 29 41 27 57 17 76 32 87 60 87s44-11 34-30C91 40 80 33 60 33Z"
             fill="url(#hamster-fur)"></path>
           <path
-            d="M60 33c-9 1-10 19-17 23-9 4-17 7-17 16 0 10 17 14 34 14s34-4 34-14c0-9-8-12-17-16-7-4-8-22-17-23Z"
+            d="M59 37c-7 8-5 18-12 22-14 3-22 10-19 17 5 12 59 15 65-1 2-6-7-13-19-16-7-4-7-16-15-22Z"
             fill="url(#hamster-cream)"></path>
-          <path
-            d="m53 28 5-5 2 5 5-4"
-            stroke="#ac835d"
-            stroke-width="1.7"
-            stroke-linecap="round"></path>
-          <ellipse cx="36" cy="70" rx="11" ry="8" fill="#e9b5a5" opacity=".33"
-          ></ellipse>
-          <ellipse cx="84" cy="70" rx="11" ry="8" fill="#e9b5a5" opacity=".33"
-          ></ellipse>
-          <g class="hamster-gaze">
-            <g class="hamster-eyes">
-              <ellipse cx="43" cy="58" rx="4.5" ry="5.5" fill="#302a25"
-              ></ellipse>
-              <ellipse cx="77" cy="58" rx="4.5" ry="5.5" fill="#302a25"
-              ></ellipse>
-              <circle cx="44" cy="56" r="1.7" fill="#fff"></circle><circle
+          <g
+            stroke="#fff6df"
+            stroke-width=".8"
+            stroke-linecap="round"
+            opacity=".7"
+          >
+            <path
+              d="m32 52 5 3m-8 5 6 2m-7 5 6 1m-3 7 5-1m49-22-5 3m9 4-6 2m7 5-6 1m3 8-5-1m-27-34 2 5m6-5-1 5"
+            ></path>
+          </g>
+          <g class="hamster-gaze"
+            ><g class="hamster-eyes">
+              <ellipse cx="43" cy="58" rx="5" ry="6.5" fill="#211c19"
+              ></ellipse><ellipse
                 cx="78"
-                cy="56"
-                r="1.7"
-                fill="#fff"></circle>
-              <circle cx="41" cy="60" r=".7" fill="#ba9680"></circle><circle
-                cx="75"
+                cy="57"
+                rx="4.7"
+                ry="6.2"
+                fill="#211c19"></ellipse>
+              <ellipse cx="44" cy="56" rx="1.6" ry="2" fill="#fffaf0"
+              ></ellipse><ellipse
+                cx="79"
+                cy="55"
+                rx="1.5"
+                ry="1.8"
+                fill="#fffaf0"></ellipse>
+              <circle cx="41" cy="61" r=".7" fill="#a98570"></circle><circle
+                cx="76"
                 cy="60"
                 r=".7"
-                fill="#ba9680"></circle>
-            </g>
-          </g>
-          <g class="hamster-nose">
-            <path d="M55 67q5-4 10 0-1 6-5 6t-5-6" fill="#d99d9a"></path>
-            <path
-              d="M60 73v3m0 0q-4 3-7 0m7 0q4 3 7 0"
-              stroke="#9c7467"
+                fill="#a98570"></circle>
+            </g></g
+          >
+          <ellipse cx="37" cy="73" rx="9" ry="5" fill="#e2b3a1" opacity=".25"
+          ></ellipse><ellipse
+            cx="83"
+            cy="72"
+            rx="9"
+            ry="5"
+            fill="#e2b3a1"
+            opacity=".25"></ellipse>
+          <g class="hamster-nose"
+            ><ellipse cx="51" cy="73" rx="9" ry="6" fill="#fff9eb"
+            ></ellipse><ellipse cx="69" cy="73" rx="9" ry="6" fill="#fff9eb"
+            ></ellipse><path d="M54 69q6-5 12 0-2 7-6 7t-6-7" fill="#dda1a5"
+            ></path><path
+              d="M57 69q3-2 6 0"
+              stroke="#f6ced0"
               stroke-width="1.2"
+              stroke-linecap="round"></path><path
+              d="M60 76v2m-5 0q5 7 10 0"
+              fill="#b67d7b"
+              stroke="#a06f68"
+              stroke-width=".8"></path><path d="M58 79h4v2h-4" fill="#fffdf4"
+            ></path></g
+          >
+          <g class="hamster-map">
+            <path
+              d="m75 18 6-2 5 2 6-2v16l-6 2-5-2-6 2Z"
+              fill="#fff4d6"
+              stroke="#b19a70"
+              stroke-width=".7"></path>
+            <path d="M81 17v15m5-14v15" stroke="#dac8a0" stroke-width=".6"
+            ></path>
+            <path
+              d="m78 28 3-5 4 3 4-5"
+              stroke="#809373"
+              stroke-width="1"
+              stroke-dasharray="1 2"
               stroke-linecap="round"></path>
+            <circle cx="89" cy="21" r="1.2" fill="#c28e78"></circle>
           </g>
           <g
-            stroke="#aa8d77"
-            stroke-width=".9"
+            stroke="#aa927e"
+            stroke-width=".6"
             stroke-linecap="round"
-            opacity=".65"
+            opacity=".75"
+            ><path
+              d="m42 71-21-5m21 8-22 1m22 1-18 6m54-12 24-6m-24 9 25 0m-25 3 20 5"
+            ></path></g
           >
-            <path d="m41 71-20-3m20 7-22 4m60-8 20-3m-20 7 22 4"></path>
+          <g class="hamster-hat" transform="rotate(-13 60 34)">
+            <path
+              d="M23 39C20 9 43 3 65 6 89 9 97 21 93 42L23 44Z"
+              fill="url(#hamster-cap)"
+              stroke="#172138"
+              stroke-width="1.4"></path>
+            <path
+              d="M25 38C8 39 0 53 8 58c12 7 22-18 58-18 10 0 21 3 27 2-16-9-45-12-68-4Z"
+              fill="#1c2945"
+              stroke="#101a30"
+              stroke-width="1.2"></path>
+            <path
+              d="M58 8Q45 20 45 33M65 8Q77 18 80 36M26 35Q59 29 91 39"
+              stroke="#71809a"
+              stroke-width=".7"
+              stroke-dasharray="1.4 2"
+              opacity=".5"></path>
+            <path d="m61 18-4 5 6 2 6-6-8-1Z" fill="#e7e8d2"></path><path
+              d="m58 24 5 1 4-4"
+              stroke="#86917c"
+              stroke-width=".7"></path>
+            <ellipse cx="62" cy="7" rx="3" ry="1.8" fill="#354464"></ellipse>
           </g>
         </g>
         <g
           class="hamster-paws"
-          fill="#e6b5a5"
-          stroke="#bc8f80"
+          fill="#e6b2ae"
+          stroke="#bd8c88"
           stroke-width=".7"
         >
-          <ellipse cx="48" cy="84" rx="5" ry="7" transform="rotate(-25 48 84)"
-          ></ellipse>
-          <ellipse cx="72" cy="84" rx="5" ry="7" transform="rotate(25 72 84)"
-          ></ellipse>
-          <path d="m46 82 3 3m-5 0 3 3m27-6-3 3m5 0-3 3"></path>
+          <path
+            d="M18 72q-5 5 1 9 3 2 8-2l2-5q-5-3-11-2ZM94 62q-1 6 5 7 4 0 7-4l-2-5q-5-1-10 2Z"
+          ></path>
+          <path d="m20 76 0 3m4-4 0 3m74-15 1 3m3-4 1 3"></path>
         </g>
+        <g class="hamster-keepsake"
+          ><path
+            d="M12 65 16 58 27 57 33 65 30 74 16 74Z"
+            fill="url(#hamster-stone)"
+            stroke="#666d5b"
+            stroke-width="1"></path><path
+            d="m17 63 8-2 4 5-8 4-5-3"
+            stroke="#d5d6bc"
+            stroke-width="1"
+            opacity=".65"></path></g
+        >
+        <g class="hamster-gift"
+          ><path
+            d="m91 52 6-7 10 1 6 7-4 8-14 0Z"
+            fill="url(#hamster-stone)"
+            stroke="#666d5b"
+            stroke-width="1"></path><path
+            d="m97 49 7 1 4 4-8 3"
+            stroke="#d5d6bc"
+            stroke-width="1"
+            opacity=".65"></path></g
+        >
       </g>
     </svg>
   </button>
@@ -136,7 +233,10 @@ const s = localize(Astro.currentLocale);
     hidden
     role="status"
   >
-    <span data-mouse-message>{s("鼠鼠把一粒小种子留给了你。")}</span>
+    <span data-mouse-message>{s("它的帽子里，似乎藏着一张地图。")}</span>
+    <button type="button" data-mouse-offer hidden
+      >{s("把小石子交给鼠鼠")}</button
+    >
     <a
       href={getRelativeLocaleUrl(Astro.currentLocale ?? "zh-CN", "island")}
       data-mouse-island
@@ -144,6 +244,14 @@ const s = localize(Astro.currentLocale);
     >
   </span>
 </span>
+<p
+  class="pebble-announcement"
+  data-pebble-announcement
+  role="status"
+  hidden
+  data-pagefind-ignore
+>
+</p>
 <script>
   import "@/scripts/mouse";
 </script>

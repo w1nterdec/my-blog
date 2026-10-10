@@ -117,6 +117,8 @@ function setupXiaohei() {
     facing: 1,
     decision: performance.now() + 4000,
     phase: 17.4,
+    stride: 0,
+    turn: 0,
     lastActivity: performance.now(),
   };
   let gardenVisible = false,
@@ -131,6 +133,8 @@ function setupXiaohei() {
     facing = 1,
     speed = 0,
     nextDecision = 0;
+  let stride = 0;
+  let turn = 0;
   let pointer = { x: -1000, y: -1000 },
     stageWidth = 600,
     stageHeight = 124;
@@ -445,6 +449,8 @@ function setupXiaohei() {
           lookY: eyes.y,
           dark: colors.dark,
           reduced: reduced.matches,
+          stride: button === header ? headerState.stride : stride,
+          turn: button === header ? headerState.turn : turn,
         });
     });
     const label = {
@@ -550,7 +556,15 @@ function setupXiaohei() {
           ? Math.sign(delta) * Math.min(0.09, Math.abs(delta) * 1.1)
           : 0;
       speed += (desired - speed) * Math.min(1, dt * 5);
+      const previousX = x;
       x = Math.max(bounds.min, Math.min(bounds.max, x + speed * dt));
+      const travelWidth = isFollowing() ? innerWidth : stageWidth;
+      const actorWidth = (isFollowing() ? companionCat : walker).offsetWidth;
+      stride +=
+        ((Math.abs(x - previousX) * travelWidth) / Math.max(1, actorWidth)) *
+        (100 / 24) *
+        Math.PI *
+        2;
       if (Math.abs(speed) > 0.008) {
         facing = speed > 0 ? 1 : -1;
         lastActivity = now;
@@ -596,13 +610,26 @@ function setupXiaohei() {
           ? Math.sign(delta) * Math.min(27 / rail.clientWidth, Math.abs(delta))
           : 0;
       headerState.speed += (desired - headerState.speed) * Math.min(1, dt * 6);
+      const previousHeaderX = headerState.x;
       headerState.x = Math.max(
         0,
         Math.min(max, headerState.x + headerState.speed * dt)
       );
+      headerState.stride +=
+        ((Math.abs(headerState.x - previousHeaderX) * rail.clientWidth) /
+          Math.max(1, header.offsetWidth)) *
+        (100 / 24) *
+        Math.PI *
+        2;
       if (Math.abs(headerState.speed) > 0.002)
         headerState.facing = headerState.speed > 0 ? 1 : -1;
     } else headerState.speed = 0;
+    const bodyWalking = now > moodUntil && Math.abs(speed) > 0.008;
+    const headerWalking =
+      now > headerState.until && Math.abs(headerState.speed) > 0.002;
+    turn += ((bodyWalking ? 1 : 0) - turn) * Math.min(1, dt * 8);
+    headerState.turn +=
+      ((headerWalking ? 1 : 0) - headerState.turn) * Math.min(1, dt * 8);
     if (now - lastDraw >= 40) {
       render(now);
       lastDraw = now;

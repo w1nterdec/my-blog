@@ -22,6 +22,7 @@ const recent = posts
   .slice(0, config.posts.perIndex);
 const photo = photos[0];
 const homePath = getRelativeLocaleUrl(locale, "");
+const rssPath = getRelativeLocaleUrl(locale, "rss.xml").replace(/\/$/, "");
 ---
 
 <Layout>
@@ -50,7 +51,7 @@ const homePath = getRelativeLocaleUrl(locale, "");
         <div class="hero-actions">
           <a class="button-primary" href={getRelativeLocaleUrl(locale, "about")}
             >{s("认识 w1nter")}<span aria-hidden="true">↗</span></a
-          ><a class="text-link" href={getRelativeLocaleUrl(locale, "rss.xml")}
+          ><a class="text-link" href={rssPath}
             >{s("订阅 RSS")}<span aria-hidden="true">↗</span></a
           >
         </div>

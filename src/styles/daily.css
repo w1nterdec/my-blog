@@ -117,6 +117,10 @@
 .hamster-home {
   position: relative;
 }
+.section-heading.hamster-home {
+  padding-right: 98px;
+  min-height: 66px;
+}
 .hamster-perch {
   position: absolute;
   top: -24px;
@@ -158,6 +162,10 @@
   left: 0;
   right: auto;
 }
+.hamster-perch.note-below .mouse-note {
+  top: 88px;
+  bottom: auto;
+}
 .hamster-gaze {
   transform: translate(var(--hamster-look-x, 0px), var(--hamster-look-y, 0px));
   transition: transform 150ms;
@@ -174,6 +182,119 @@
 }
 .hamster-nose {
   transform-origin: 60px 70px;
+}
+.hamster-gift {
+  opacity: 0;
+  transform: translateY(6px) scale(0.85);
+  transform-origin: 101px 56px;
+  transition:
+    opacity 350ms,
+    transform 500ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.hamster-perch[data-quest="unlocked"] .hamster-gift {
+  opacity: 1;
+  transform: none;
+}
+.hamster-map {
+  opacity: 0;
+  transform: translateY(10px) rotate(8deg);
+  transform-origin: 84px 32px;
+  transition:
+    opacity 400ms 500ms,
+    transform 700ms 500ms;
+}
+.hamster-perch[data-quest="unlocked"] .hamster-map {
+  opacity: 1;
+  transform: translate(6px, -12px) rotate(8deg);
+}
+.hamster-perch.is-arriving svg {
+  transform-origin: 50% 100%;
+  animation: hamster-arrive 850ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.hamster-perch.is-thanking .hamster-head {
+  animation: hamster-thanks 1.6s ease-in-out;
+}
+@keyframes hamster-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(9px) scale(0.94);
+  }
+  65% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.015);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes hamster-thanks {
+  25%,
+  65% {
+    transform: translateY(2px) rotate(4deg);
+  }
+  45%,
+  85% {
+    transform: translateY(-1px) rotate(-2deg);
+  }
+}
+.pebble-home {
+  position: relative;
+}
+.pebble-home > .hamster-pebble {
+  position: absolute;
+  right: 108px;
+  top: -28px;
+  margin: 0;
+  display: grid;
+  place-items: center;
+  z-index: 24;
+  cursor: grab;
+  color: #8a9076;
+  transition:
+    transform 220ms,
+    color 220ms;
+}
+.hamster-pebble:hover {
+  transform: rotate(-9deg) translateY(-2px);
+  color: var(--accent);
+}
+.hamster-pebble:focus-visible {
+  outline: 2px solid var(--accent);
+  border-radius: 50%;
+}
+.hamster-pebble[hidden] {
+  display: none;
+}
+.mouse-note [data-mouse-offer] {
+  display: block;
+  margin-top: 12px;
+  padding: 8px 12px;
+  min-height: 44px;
+  border-radius: 10px;
+  background: var(--surface-soft);
+  color: var(--accent);
+  border: 1px solid var(--border);
+}
+.mouse-note [hidden] {
+  display: none !important;
+}
+.pebble-announcement {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(360px, calc(100vw - 32px));
+  padding: 14px 18px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 8px 32px #00000012;
+  color: var(--foreground);
+  font-size: 13px;
+  line-height: 1.8;
+  z-index: 80;
+  pointer-events: none;
 }
 .hamster-perch[data-awake="true"] .hamster-body {
   animation: hamster-breathe 4s ease-in-out infinite;
@@ -239,6 +360,7 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .hamster-perch *,
+  .hamster-pebble,
   .lyric-card,
   .lyric-heading button,
   .lyric-lines button {

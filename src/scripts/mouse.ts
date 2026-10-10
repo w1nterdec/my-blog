@@ -41,9 +41,14 @@ function setupMouse() {
   perch.hidden = false;
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   let visible = false;
+  let appeared = false;
   const observer = new IntersectionObserver(entries => {
     visible = entries[0]?.isIntersecting ?? false;
     perch.dataset.awake = String(visible && !document.hidden);
+    if (visible && !appeared) {
+      appeared = true;
+      perch.classList.add("is-arriving");
+    }
   });
   observer.observe(perch);
   document.addEventListener(
@@ -99,28 +104,163 @@ function setupMouse() {
     },
     { signal: controller.signal }
   );
-  let seeds = 0,
-    timer: ReturnType<typeof setTimeout> | undefined;
+  const pebble = document.querySelector<HTMLAnchorElement>(
+    "[data-hamster-pebble]"
+  );
+  const announcement = document.querySelector<HTMLElement>(
+    "[data-pebble-announcement]"
+  );
+  const offer = note.querySelector<HTMLButtonElement>("[data-mouse-offer]");
+  let state = "searching";
+  try {
+    const saved = sessionStorage.getItem("hamster-pebble-state");
+    if (saved === "carried" || saved === "unlocked") state = saved;
+  } catch {}
+  const stoneHomes = homes.filter(candidate => candidate.host !== home.host);
+  const stoneHome = (stoneHomes.length ? stoneHomes : homes)[
+    Math.floor(Math.random() * (stoneHomes.length || homes.length))
+  ];
+  if (pebble) {
+    stoneHome.host.classList.add("pebble-home");
+    pebble.classList.add("hamster-pebble");
+    stoneHome.host.append(pebble);
+    pebble.draggable = true;
+  }
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  let announcementTimer: ReturnType<typeof setTimeout> | undefined;
+  let thanksTimer: ReturnType<typeof setTimeout> | undefined;
+  const update = () => {
+    perch.dataset.quest = state;
+    if (pebble) pebble.hidden = state !== "searching";
+    if (offer) offer.hidden = state !== "carried";
+    note.querySelector<HTMLAnchorElement>("[data-mouse-island]")!.hidden =
+      state !== "unlocked";
+    note.querySelector<HTMLElement>("[data-mouse-message]")!.textContent = s(
+      state === "unlocked"
+        ? "它把小石子举得高高的，帽子里掉出一张去孤岛的地图。"
+        : state === "carried"
+          ? "这颗石子正合它的心意。要交给它收藏吗？"
+          : "它的帽子里，似乎藏着一张地图。找一颗散落在页面里的小石子，来和它交换吧。"
+    );
+    mouse.title = s(
+      state === "carried" ? "把小石子交给鼠鼠" : "轻轻碰一下仓鼠"
+    );
+  };
+  const save = () => {
+    try {
+      sessionStorage.setItem("hamster-pebble-state", state);
+    } catch {}
+    update();
+  };
+  const reveal = () => {
+    clearTimeout(timer);
+    perch.classList.toggle(
+      "note-below",
+      mouse.getBoundingClientRect().top < 200
+    );
+    note.hidden = false;
+    mouse.setAttribute("aria-expanded", "true");
+    update();
+    timer = setTimeout(() => {
+      if (note.matches(":focus-within")) return;
+      note.hidden = true;
+      mouse.setAttribute("aria-expanded", "false");
+    }, 12000);
+  };
+  const celebrate = () => {
+    mouse.classList.remove("mouse-happy");
+    void mouse.offsetWidth;
+    mouse.classList.add("mouse-happy");
+  };
+  const pickUp = () => {
+    if (state !== "searching") return;
+    state = "carried";
+    save();
+    if (announcement) {
+      announcement.textContent = s(
+        "拾到一颗小石子。去找那只戴帽子的仓鼠，把它交给它吧。"
+      );
+      announcement.hidden = false;
+      clearTimeout(announcementTimer);
+      announcementTimer = setTimeout(() => {
+        announcement.hidden = true;
+      }, 8000);
+    }
+    // Avoid leaving keyboard focus on the now-hidden stone.
+    if (document.activeElement === pebble) mouse.focus({ preventScroll: true });
+  };
+  pebble?.addEventListener(
+    "click",
+    event => {
+      event.preventDefault();
+      pickUp();
+    },
+    { signal: controller.signal }
+  );
+  const dragKey = Math.random().toString(36).slice(2);
+  pebble?.addEventListener(
+    "dragstart",
+    event => {
+      event.dataTransfer?.setData("application/x-zhixing-pebble", dragKey);
+      if (event.dataTransfer) event.dataTransfer.effectAllowed = "move";
+      // Keep the drag source visible until drop or dragend.
+    },
+    { signal: controller.signal }
+  );
+  mouse.addEventListener(
+    "dragover",
+    event => {
+      if (event.dataTransfer?.types.includes("application/x-zhixing-pebble")) {
+        event.preventDefault();
+        if (event.dataTransfer) event.dataTransfer.dropEffect = "move";
+      }
+    },
+    { signal: controller.signal }
+  );
+  const give = () => {
+    if (state !== "carried") return;
+    state = "unlocked";
+    save();
+    reveal();
+    celebrate();
+    clearTimeout(poseTimer);
+    perch.classList.remove("is-sniffing", "is-shuffling");
+    perch.classList.add("is-thanking");
+    thanksTimer = setTimeout(() => perch.classList.remove("is-thanking"), 1600);
+    if (announcement) announcement.hidden = true;
+    // The action disappears after giving; return focus to the visible resident.
+    if (document.activeElement === offer) mouse.focus({ preventScroll: true });
+  };
+  mouse.addEventListener(
+    "drop",
+    event => {
+      if (
+        event.dataTransfer?.getData("application/x-zhixing-pebble") !== dragKey
+      )
+        return;
+      event.preventDefault();
+      pickUp();
+      give();
+    },
+    { signal: controller.signal }
+  );
+  offer?.addEventListener("click", give, { signal: controller.signal });
+  update();
   mouse.addEventListener(
     "click",
     () => {
-      clearTimeout(timer);
-      seeds = Math.min(3, seeds + 1);
-      note.hidden = false;
-      mouse.setAttribute("aria-expanded", "true");
-      mouse.classList.remove("mouse-happy");
-      void mouse.offsetWidth;
-      mouse.classList.add("mouse-happy");
-      note.querySelector<HTMLElement>("[data-mouse-message]")!.textContent = s(
-        seeds < 3 ? "鼠鼠把一粒小种子留给了你。" : "三粒种子，换一座小岛。"
-      );
-      note.querySelector<HTMLAnchorElement>("[data-mouse-island]")!.hidden =
-        seeds < 3;
-      mouse.title = s(seeds < 3 ? "再给它一粒种子" : "去孤岛坐坐 ↗");
-      timer = setTimeout(() => {
+      reveal();
+      celebrate();
+    },
+    { signal: controller.signal }
+  );
+  document.addEventListener(
+    "pointerdown",
+    event => {
+      if (event.target instanceof Node && !perch.contains(event.target)) {
         note.hidden = true;
         mouse.setAttribute("aria-expanded", "false");
-      }, 10000);
+      }
     },
     { signal: controller.signal }
   );
@@ -128,6 +268,8 @@ function setupMouse() {
     "keydown",
     event => {
       if (event.key === "Escape") {
+        if (note.contains(document.activeElement))
+          mouse.focus({ preventScroll: true });
         note.hidden = true;
         mouse.setAttribute("aria-expanded", "false");
       }
@@ -139,8 +281,11 @@ function setupMouse() {
     clearTimeout(timer);
     clearTimeout(idleTimer);
     clearTimeout(poseTimer);
+    clearTimeout(announcementTimer);
+    clearTimeout(thanksTimer);
     observer.disconnect();
     home.host.classList.remove("hamster-home");
+    stoneHome.host.classList.remove("pebble-home");
     currentPerch = null;
   };
 }

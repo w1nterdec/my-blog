@@ -44,7 +44,7 @@ const socialImageURL = new URL(ogImage, Astro.site ?? Astro.url);
 const rssHref = getRelativeLocaleUrl(
   Astro.currentLocale ?? config.site.lang,
   "rss.xml"
-);
+).replace(/\/$/, "");
 ---
 
 <!doctype html>

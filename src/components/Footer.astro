@@ -28,13 +28,23 @@ const s = localize(Astro.currentLocale);
   <Xiaohei mode="garden" />
   <p class="site-request-count" data-request-count hidden data-pagefind-ignore>
     {s("页面请求记录")} · <span data-request-total></span><span class="sr-only"
-      >{s("包括机器人访问，不代表独立访客")}</span>
+      >{s("包括机器人访问，不代表独立访客")}</span
+    >
   </p>
   <a
     class="island-pebble"
+    data-hamster-pebble
     href={getRelativeLocaleUrl(Astro.currentLocale ?? "zh-CN", "island")}
     aria-label={s("拾一粒小石子")}
-    title={s("拾一粒小石子")}>◦</a
+    title={s("拾一粒小石子")}
+    ><svg viewBox="0 0 30 24" width="22" height="18" aria-hidden="true"
+      ><path d="m4 10 6-6 10 1 7 8-4 7H7l-4-5Z" fill="currentColor"></path><path
+        d="m10 8 9 1 3 5-10 2-4-4Z"
+        fill="none"
+        stroke="var(--surface)"
+        stroke-width="1"
+        opacity=".6"></path></svg
+    ></a
   >
   <div
     class="border-border flex flex-col items-center justify-between border-t py-6 sm:flex-row-reverse sm:py-4"

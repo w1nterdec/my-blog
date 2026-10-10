@@ -52,7 +52,8 @@ function setup() {
           "[data-record-cover]"
         );
         if (!cover) return;
-        cover.addEventListener("focus", () => select(index), options);
+        // Focus must not reorder overlapping covers between pointerdown and
+        // pointerup. Activate on click (including native Enter/Space) instead.
         cover.addEventListener("click", () => select(index), options);
       });
       stack.querySelectorAll<HTMLElement>("[data-lyric-card]").forEach(card => {

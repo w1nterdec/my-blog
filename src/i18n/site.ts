@@ -19,6 +19,17 @@ const english: Record<string, string> = {
   其他收藏: "ALSO ON THE SHELF",
   挑一张唱片: "Choose a record",
   轻轻碰一下仓鼠: "Say hello to the little hamster",
+  "它的帽子里，似乎藏着一张地图。":
+    "There might be a map tucked inside its cap.",
+  "它的帽子里，似乎藏着一张地图。找一颗散落在页面里的小石子，来和它交换吧。":
+    "A map is tucked inside its cap. Find a little pebble somewhere on this page to trade for it.",
+  "拾到一颗小石子。去找那只戴帽子的仓鼠，把它交给它吧。":
+    "A little pebble for your pocket. Find the hamster in the cap and offer it your treasure.",
+  "这颗石子正合它的心意。要交给它收藏吗？":
+    "Just the pebble it was hoping for. Shall we add it to its collection?",
+  "它把小石子举得高高的，帽子里掉出一张去孤岛的地图。":
+    "It holds your pebble high. A map to the little island slips out of its cap.",
+  把小石子交给鼠鼠: "Offer your pebble to the hamster",
   歌词摘句: "Lyric highlights",
   留下的一句: "WORDS THAT STAY",
   放大歌词卡片: "Expand lyric card",
