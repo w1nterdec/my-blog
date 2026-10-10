@@ -67,7 +67,11 @@ export async function exportContent(contentDir, outputRoot = root, now = Date.no
   }
   for (const item of journal.music ?? []) {
     if (!eligible(item, now)) continue;
-    const music = pick(item, ['id', 'artist', 'title', 'kind', 'cover', 'thought', 'spotify', 'qq']);
+      const music = pick(item, ['id', 'artist', 'title', 'kind', 'cover', 'thought', 'spotify', 'qq', 'lyricSong']);
+      if (item.lyrics !== undefined) {
+        if (!Array.isArray(item.lyrics) || item.lyrics.length > 100 || item.lyrics.some(line => typeof line !== 'string' || line.length > 500)) throw new Error('Invalid lyric lines');
+        music.lyrics = item.lyrics.map(line => line.trim()).filter(Boolean);
+      }
     if (music.cover) music.cover = await image(music.cover);
     out.music.push(music);
   }

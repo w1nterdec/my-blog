@@ -2,13 +2,15 @@
 import { music } from "@/data/personal";
 import { localize } from "@/i18n/site";
 import { getAssetPath } from "@/utils/withBase";
-import { getRelativeLocaleUrl } from "astro:i18n";
+
 const s = localize(Astro.currentLocale);
-const locale = Astro.currentLocale ?? "zh-CN";
+
 const isJustin = (artist: string) => /justin\s+bieber/i.test(artist);
 const records = [...music].sort(
   (a, b) => Number(isJustin(b.artist)) - Number(isJustin(a.artist))
 );
+const readyRecords = records.filter(item => item.title || item.cover);
+const covers = readyRecords.length ? readyRecords : records.slice(0, 4);
 const external = (value?: string) => {
   try {
     const url = new URL(value ?? "");
@@ -28,62 +30,13 @@ const external = (value?: string) => {
         聆 <span class="heading-note">{s("音乐")}</span>
       </h2>
     </div>
-    <span class="music-mouse-wrap">
-      <button
-        class="little-mouse"
-        type="button"
-        data-mouse
-        aria-label={s("轻轻碰一下鼠鼠")}
-        aria-expanded="false"
-        aria-controls="mouse-note"
-      >
-        <svg viewBox="0 0 80 60" aria-hidden="true"
-          ><path
-            class="mouse-tail"
-            d="M45 42c18 6 27-3 22-10"
-            fill="none"
-            stroke="#a88d7c"
-            stroke-width="3"
-            stroke-linecap="round"></path><ellipse
-            cx="36"
-            cy="39"
-            rx="20"
-            ry="14"
-            fill="#b9aaa0"></ellipse><circle
-            cx="25"
-            cy="20"
-            r="12"
-            fill="#b9aaa0"></circle><circle cx="25" cy="20" r="7" fill="#e2c6ba"
-          ></circle><path
-            d="M34 27q-14-4-22 13q-4 9 12 11h18q12-12-8-24"
-            fill="#c8bcb3"></path><circle cx="22" cy="37" r="3" fill="#303830"
-          ></circle><circle cx="21" cy="36" r="1" fill="white"></circle><circle
-            cx="11"
-            cy="44"
-            r="2.5"
-            fill="#b67d77"></circle><path
-            d="M18 45l-9 5m10-7-11-1"
-            stroke="#847369"
-            stroke-width="1"
-            stroke-linecap="round"></path></svg
-        >
-      </button>
-      <span
-        class="mouse-note"
-        id="mouse-note"
-        data-mouse-note
-        hidden
-        role="status"
-        ><span data-mouse-message>{s("鼠鼠把一粒小种子留给了你。")}</span><a
-          href={getRelativeLocaleUrl(locale, "island")}
-          data-mouse-island
-          hidden>{s("去孤岛坐坐 ↗")}</a
-        ></span
-      >
-    </span>
   </div>
   <p class="module-intro">{s("把喜欢的声音，留在身边。")}</p>
-  <div class="music-grid music-stack" data-music-stack>
+  <div
+    class="music-grid music-stack"
+    data-music-stack
+    style={`--record-count:${Math.min(covers.length, 4)}`}
+  >
     {
       records.map((item, index) => (
         <article
@@ -91,37 +44,40 @@ const external = (value?: string) => {
           data-record={index}
           data-active={index === 0 ? "true" : "false"}
         >
-          <button
-            type="button"
-            class:list={["record-cover", `record-tone-${index % 4}`]}
-            style={`--record-index:${records.length > 1 ? (index * 3) / (records.length - 1) : 0};--record-depth:${records.length - index}`}
-            data-record-cover
-            aria-label={`${item.artist}${item.title ? ` · ${item.title}` : ""}`}
-            aria-pressed={index === 0}
-          >
-            {item.cover ? (
-              <img
-                src={getAssetPath(item.cover)}
-                alt={item.title ?? item.artist}
-                width="360"
-                height="360"
-                loading="lazy"
-                decoding="async"
-              />
-            ) : (
-              <div class="record-placeholder" aria-hidden="true">
-                <span class="record-disc">
-                  <i />
+          {covers.includes(item) && (
+            <button
+              type="button"
+              class:list={["record-cover", `record-tone-${index % 4}`]}
+              style={`--record-index:${covers.indexOf(item)};--record-depth:${covers.length - covers.indexOf(item)}`}
+              data-record-cover
+              hidden={covers.indexOf(item) >= 4}
+              aria-label={`${item.artist}${item.title ? ` · ${item.title}` : ""}`}
+              aria-pressed={index === 0}
+            >
+              {item.cover ? (
+                <img
+                  src={getAssetPath(item.cover)}
+                  alt={item.title ?? item.artist}
+                  width="360"
+                  height="360"
+                  loading="lazy"
+                  decoding="async"
+                />
+              ) : (
+                <div class="record-placeholder" aria-hidden="true">
+                  <span class="record-disc">
+                    <i />
+                  </span>
+                  <span class="record-initial">{item.artist.slice(0, 1)}</span>
+                </div>
+              )}
+              {!item.cover && (
+                <span class="record-cover-label">
+                  {item.title ?? item.artist}
                 </span>
-                <span class="record-initial">{item.artist.slice(0, 1)}</span>
-              </div>
-            )}
-            {!item.cover && (
-              <span class="record-cover-label">
-                {item.title ?? item.artist}
-              </span>
-            )}
-          </button>
+              )}
+            </button>
+          )}
           <div class="record-info">
             <p class="eyebrow">
               {s(isJustin(item.artist) ? "偏爱" : "其他收藏")}
@@ -154,6 +110,56 @@ const external = (value?: string) => {
                 </a>
               )}
             </div>
+            <section
+              class:list={["lyric-card", `lyric-tone-${index % 4}`]}
+              data-lyric-card
+              aria-label={s("歌词摘句")}
+            >
+              <div class="lyric-heading">
+                <span>{s("留下的一句")}</span>
+                <button
+                  type="button"
+                  data-lyric-expand
+                  aria-expanded="false"
+                  aria-label={s("放大歌词卡片")}
+                >
+                  ↗
+                </button>
+              </div>
+              {item.lyricSong && <p class="lyric-song">{item.lyricSong}</p>}
+              {item.lyrics?.length ? (
+                <div
+                  class="lyric-lines"
+                  data-lyric-lines
+                  role="group"
+                  aria-label={s("点击一句，慢慢读")}
+                >
+                  {item.lyrics.map((line, lineIndex) => (
+                    <button
+                      type="button"
+                      data-lyric-line
+                      aria-pressed={lineIndex === 0}
+                    >
+                      {line}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div class="lyric-empty">
+                  <span aria-hidden="true">“</span>
+                  <p>{s("那句舍不得忘的歌词，留给你来写。")}</p>
+                  <span class="lyric-empty-line" aria-hidden="true" />
+                  <span class="lyric-empty-line" aria-hidden="true" />
+                </div>
+              )}
+              <p class="lyric-footnote">
+                {s(
+                  item.lyrics?.length
+                    ? "歌词摘句 · 点击高亮 / 滚动阅读"
+                    : "歌词摘句 · 待填写"
+                )}
+              </p>
+            </section>
           </div>
         </article>
       ))
@@ -181,6 +187,5 @@ const external = (value?: string) => {
   }
 </section>
 <script>
-  import "@/scripts/mouse";
   import "@/scripts/music-stack";
 </script>

@@ -23,13 +23,16 @@ test("export excludes private bodies, unused photos, extra fields, and original 
     await writeFile(join(content, "settings/journal.json"), JSON.stringify({
       personal: { name: "test", avatar: "avatar.webp", project: {}, secret: "PRIVATE" }, places: [],
       photos: [{ title: "public", category: "风光", src: "/media/real.jpg" }, { draft: true, title: "PRIVATE", src: "/media/unused.jpg" }],
-      notes: [{ draft: true, body: "PRIVATE" }], music: [], games: []
+      notes: [{ draft: true, body: "PRIVATE" }],
+      music: [{ id: "record", artist: "test", lyricSong: "test song", lyrics: ["  a public line  ", ""], secret: "PRIVATE" }, {draft: true, id: "private-record", lyrics: ["PRIVATE"]}], games: []
     }));
     await writeFile(join(content, "posts/draft.md"), '---\ntitle: secret\ndraft: true\n---\nPRIVATE');
     await writeFile(join(content, "posts/future.md"), '---\ntitle: later\npubDatetime: 2099-01-01T00:00:00Z\n---\nPRIVATE');
     await writeFile(join(content, "posts/public.md"), '---\ntitle: public\ndescription: summary\npubDatetime: 2020-01-01T00:00:00Z\n---\n![test](/media/real.jpg)');
     const out = await exportContent(content, output);
     assert.equal(JSON.stringify(out).includes("PRIVATE"), false);
+    assert.deepEqual(out.music[0].lyrics, ["a public line"]);
+    assert.equal(out.music[0].lyricSong, "test song");
     assert.deepEqual(await readdir(join(output, "src/content/posts/_published")), ["public.md"]);
     const images = await readdir(join(output, "public/uploads"));
     assert.equal(images.length, 1);

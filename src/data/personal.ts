@@ -27,6 +27,8 @@ export interface Music {
   thought?: string;
   spotify?: string;
   qq?: string;
+  lyricSong?: string;
+  lyrics?: string[];
 }
 export interface Note {
   id: string;

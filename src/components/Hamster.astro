@@ -1,0 +1,149 @@
+---
+import { localize } from "@/i18n/site";
+import { getRelativeLocaleUrl } from "astro:i18n";
+const s = localize(Astro.currentLocale);
+---
+
+<span class="hamster-perch" data-hamster hidden data-pagefind-ignore>
+  <button
+    class="little-mouse hamster-button"
+    type="button"
+    data-mouse
+    aria-label={s("轻轻碰一下仓鼠")}
+    aria-expanded="false"
+    aria-controls="hamster-note"
+  >
+    <svg viewBox="0 0 120 110" fill="none" aria-hidden="true">
+      <defs>
+        <radialGradient id="hamster-fur" cx=".36" cy=".25" r=".8">
+          <stop stop-color="#edd0a5"></stop><stop
+            offset=".62"
+            stop-color="#cba373"></stop><stop offset="1" stop-color="#a77c54"
+          ></stop>
+        </radialGradient>
+        <radialGradient id="hamster-cream" cx=".5" cy=".25" r=".8">
+          <stop stop-color="#fff8e9"></stop><stop
+            offset="1"
+            stop-color="#e9d8bd"></stop>
+        </radialGradient>
+      </defs>
+      <ellipse cx="60" cy="99" rx="35" ry="5" fill="#544536" opacity=".12"
+      ></ellipse>
+      <g class="hamster-body">
+        <ellipse cx="60" cy="75" rx="34" ry="25" fill="url(#hamster-fur)"
+        ></ellipse>
+        <ellipse cx="60" cy="79" rx="23" ry="19" fill="url(#hamster-cream)"
+        ></ellipse>
+        <g
+          class="hamster-feet"
+          fill="#dcaaa0"
+          stroke="#ba8a80"
+          stroke-width=".7"
+        >
+          <ellipse cx="39" cy="97" rx="9" ry="4"></ellipse><ellipse
+            cx="81"
+            cy="97"
+            rx="9"
+            ry="4"></ellipse>
+          <path d="m36 96 0 3m5-3 0 3m36-3 0 3m5-3 0 3"></path>
+        </g>
+        <g class="hamster-head">
+          <ellipse
+            cx="34"
+            cy="31"
+            rx="13"
+            ry="15"
+            fill="url(#hamster-fur)"
+            transform="rotate(-20 34 31)"></ellipse>
+          <ellipse
+            cx="86"
+            cy="31"
+            rx="13"
+            ry="15"
+            fill="url(#hamster-fur)"
+            transform="rotate(20 86 31)"></ellipse>
+          <ellipse cx="34" cy="31" rx="8" ry="10" fill="#e9b7af"></ellipse>
+          <ellipse cx="86" cy="31" rx="8" ry="10" fill="#e9b7af"></ellipse>
+          <path
+            d="M60 27c-22 0-33 11-36 27-6 7-6 21 4 28 8 6 21 4 32 4s24 2 32-4c10-7 10-21 4-28-3-16-14-27-36-27Z"
+            fill="url(#hamster-fur)"></path>
+          <path
+            d="M60 33c-9 1-10 19-17 23-9 4-17 7-17 16 0 10 17 14 34 14s34-4 34-14c0-9-8-12-17-16-7-4-8-22-17-23Z"
+            fill="url(#hamster-cream)"></path>
+          <path
+            d="m53 28 5-5 2 5 5-4"
+            stroke="#ac835d"
+            stroke-width="1.7"
+            stroke-linecap="round"></path>
+          <ellipse cx="36" cy="70" rx="11" ry="8" fill="#e9b5a5" opacity=".33"
+          ></ellipse>
+          <ellipse cx="84" cy="70" rx="11" ry="8" fill="#e9b5a5" opacity=".33"
+          ></ellipse>
+          <g class="hamster-gaze">
+            <g class="hamster-eyes">
+              <ellipse cx="43" cy="58" rx="4.5" ry="5.5" fill="#302a25"
+              ></ellipse>
+              <ellipse cx="77" cy="58" rx="4.5" ry="5.5" fill="#302a25"
+              ></ellipse>
+              <circle cx="44" cy="56" r="1.7" fill="#fff"></circle><circle
+                cx="78"
+                cy="56"
+                r="1.7"
+                fill="#fff"></circle>
+              <circle cx="41" cy="60" r=".7" fill="#ba9680"></circle><circle
+                cx="75"
+                cy="60"
+                r=".7"
+                fill="#ba9680"></circle>
+            </g>
+          </g>
+          <g class="hamster-nose">
+            <path d="M55 67q5-4 10 0-1 6-5 6t-5-6" fill="#d99d9a"></path>
+            <path
+              d="M60 73v3m0 0q-4 3-7 0m7 0q4 3 7 0"
+              stroke="#9c7467"
+              stroke-width="1.2"
+              stroke-linecap="round"></path>
+          </g>
+          <g
+            stroke="#aa8d77"
+            stroke-width=".9"
+            stroke-linecap="round"
+            opacity=".65"
+          >
+            <path d="m41 71-20-3m20 7-22 4m60-8 20-3m-20 7 22 4"></path>
+          </g>
+        </g>
+        <g
+          class="hamster-paws"
+          fill="#e6b5a5"
+          stroke="#bc8f80"
+          stroke-width=".7"
+        >
+          <ellipse cx="48" cy="84" rx="5" ry="7" transform="rotate(-25 48 84)"
+          ></ellipse>
+          <ellipse cx="72" cy="84" rx="5" ry="7" transform="rotate(25 72 84)"
+          ></ellipse>
+          <path d="m46 82 3 3m-5 0 3 3m27-6-3 3m5 0-3 3"></path>
+        </g>
+      </g>
+    </svg>
+  </button>
+  <span
+    class="mouse-note"
+    id="hamster-note"
+    data-mouse-note
+    hidden
+    role="status"
+  >
+    <span data-mouse-message>{s("鼠鼠把一粒小种子留给了你。")}</span>
+    <a
+      href={getRelativeLocaleUrl(Astro.currentLocale ?? "zh-CN", "island")}
+      data-mouse-island
+      hidden>{s("去孤岛坐坐 ↗")}</a
+    >
+  </span>
+</span>
+<script>
+  import "@/scripts/mouse";
+</script>

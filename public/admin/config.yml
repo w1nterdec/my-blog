@@ -213,6 +213,7 @@ collections:
                   - 歌手
                   - 专辑
                   - 歌曲
+                  - 单曲
                   - 歌单
                 default: 歌手
               - name: cover
@@ -226,6 +227,19 @@ collections:
                 label: 听歌感想
                 widget: text
                 required: false
+              - name: lyricSong
+                label: 歌词对应歌曲（专辑可注明曲目）
+                widget: string
+                required: false
+              - name: lyrics
+                label: 喜欢的歌词（每项一句，可拖动排序）
+                widget: list
+                required: false
+                hint: 留空时显示待填写卡片；保存后随音乐条目一起发布。
+                field:
+                  name: line
+                  label: 歌词句子
+                  widget: string
               - name: spotify
                 label: Spotify 分享链接
                 widget: string

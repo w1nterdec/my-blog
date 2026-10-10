@@ -7,6 +7,7 @@ import config from "@/config";
 import { localize } from "@/i18n/site";
 import { stripBase, stripLocale } from "@/utils/withBase";
 import Xiaohei from "@/components/Xiaohei.astro";
+import Hamster from "@/components/Hamster.astro";
 import "@/styles/global.css";
 
 type Props = {
@@ -178,6 +179,7 @@ const rssHref = getRelativeLocaleUrl(
   >
     <slot />
     <Xiaohei mode="companion" />
+    <Hamster />
     <script>
       import "@/scripts/theme";
       import "@/scripts/motion";
