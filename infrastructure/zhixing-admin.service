@@ -1,0 +1,19 @@
+[Unit]
+Description=Zhixing GitHub OAuth bridge
+After=network-online.target
+[Service]
+Type=simple
+User=zhixing-admin
+Group=zhixing-admin
+WorkingDirectory=/opt/zhixing-admin
+EnvironmentFile=/etc/zhixing-admin.env
+ExecStart=/usr/bin/node /opt/zhixing-admin/index.mjs
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+MemoryMax=128M
+[Install]
+WantedBy=multi-user.target

@@ -10,13 +10,13 @@ import { getAssetPath } from "@/utils/withBase";
     photos.length ? (
       <>
         <div class="gallery-filters" role="group" aria-label={s("摄影分类")}>
-          {["全部", "人像", "猫犬"].map((label, i) => (
+          {["全部", "人像", "猫犬", "风光"].map((label, i) => (
             <button
               type="button"
-              data-photo-filter={s(label)}
+              data-photo-filter={label}
               aria-pressed={i === 0}
             >
-              {label}
+              {s(label)}
             </button>
           ))}
         </div>
@@ -30,6 +30,10 @@ import { getAssetPath } from "@/utils/withBase";
               data-photo-src={getAssetPath(photo.src)}
               data-photo-alt={photo.alt}
               data-photo-title={photo.title}
+              data-photo-story={photo.story}
+              data-photo-details={[photo.date, photo.location, photo.camera]
+                .filter(Boolean)
+                .join(" · ")}
               aria-label={`${s("查看照片")}: ${photo.title}`}
             >
               <img
@@ -37,6 +41,8 @@ import { getAssetPath } from "@/utils/withBase";
                 alt={photo.alt}
                 loading="lazy"
                 decoding="async"
+                width={photo.width}
+                height={photo.height}
               />
               <span class="photo-caption">
                 <strong>{photo.title}</strong>

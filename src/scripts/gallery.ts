@@ -17,8 +17,13 @@ export function initGallery() {
     const photo = visible[index];
     large.src = photo.dataset.photoSrc!;
     large.alt = photo.dataset.photoAlt ?? "";
-    dialog!.querySelector("[data-photo-description]")!.textContent =
-      photo.dataset.photoTitle ?? "";
+    dialog!.querySelector("[data-photo-description]")!.textContent = [
+      photo.dataset.photoTitle,
+      photo.dataset.photoDetails,
+      photo.dataset.photoStory,
+    ]
+      .filter(Boolean)
+      .join("\n");
     dialog!.querySelector("[data-photo-counter]")!.textContent =
       `${index + 1} / ${visible.length}`;
   }

@@ -1,0 +1,20 @@
+body {
+  max-width: 760px;
+  margin: auto;
+  padding: 32px;
+  background: #f8f7f3;
+  color: #303830;
+  font-family: system-ui, "Microsoft YaHei", sans-serif;
+  line-height: 1.9;
+}
+h1,
+h2 {
+  font-family: Georgia, "Songti SC", serif;
+}
+img {
+  max-width: 100%;
+  border-radius: 16px;
+}
+pre {
+  white-space: pre-wrap;
+}

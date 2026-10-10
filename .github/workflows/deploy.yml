@@ -1,57 +1,69 @@
 name: Deploy Astro to VPS
-
 on:
   push:
-    branches:
-      - main
-
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      operation:
+        type: choice
+        options: [inspect, deploy]
+        default: inspect
+permissions:
+  contents: read
+concurrency:
+  group: production-publication
+  cancel-in-progress: false
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
-concurrency:
-  group: deploy-${{ github.ref }}
-  cancel-in-progress: false
-
+  ASTRO_TELEMETRY_DISABLED: "1"
 jobs:
-  build-and-deploy:
+  inspect:
+    if: github.event_name == 'workflow_dispatch' && inputs.operation == 'inspect'
     runs-on: ubuntu-latest
-
+    timeout-minutes: 5
     steps:
-      # 拉取代码
-      - name: Checkout
-        uses: actions/checkout@v5
-
-      # 安装 Node.js
-      - name: Setup Node
-        uses: actions/setup-node@v5
-        with:
-          node-version: 22
-          cache: npm
-
-      # 安装依赖
-      - name: Install dependencies
-        run: npm ci
-
-      # 构建 Astro
-      - name: Build Astro
-        run: npm run build
-
-      # 上传 dist 到 VPS
-      - name: Upload dist to VPS
-        uses: appleboy/scp-action@v1
+      - name: Inspect production configuration without modifying it
+        uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.ECS_HOST }}
           username: ${{ secrets.ECS_USER }}
           key: ${{ secrets.ECS_SSH_KEY }}
           port: ${{ secrets.ECS_PORT }}
-          source: "dist/"
+          script: |
+            echo '--- Static server routing ---'
+            sudo nginx -T 2>&1 | grep -E 'configuration file|server_name|listen |root |try_files|ssl_certificate|error_page' || true
+            echo '--- Release directories ---'
+            ls -ld /var/www/astro-blog /var/www/astro-blog/current /var/www/astro-releases 2>/dev/null || true
+            echo '--- Certificate renewal service ---'
+            systemctl list-timers --all --no-pager | grep -E 'certbot|acme' || true
+            echo '--- Node runtime ---'
+            node --version 2>/dev/null || true
+  build-and-deploy:
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || inputs.operation == 'deploy')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run lint && node --test tests/*.test.mjs
+      - run: npm run build
+      # Until the content pipeline and Nginx release root are connected, retain
+      # the existing deploy path. Production migration is a separate reviewed step.
+      - uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.ECS_HOST }}
+          username: ${{ secrets.ECS_USER }}
+          key: ${{ secrets.ECS_SSH_KEY }}
+          port: ${{ secrets.ECS_PORT }}
+          source: dist/
           target: /var/www/astro-blog
           strip_components: 1
           overwrite: true
-
-      # 修复权限
-      - name: Fix permissions
-        uses: appleboy/ssh-action@v1
+      - uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.ECS_HOST }}
           username: ${{ secrets.ECS_USER }}

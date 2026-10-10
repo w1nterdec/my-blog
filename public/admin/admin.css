@@ -1,0 +1,34 @@
+body {
+  margin: 0;
+  background: #f8f7f3;
+  font-family: system-ui, "Microsoft YaHei", sans-serif;
+}
+.admin-guide {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 12px 20px;
+  background: #28362e;
+  color: #eff0e9;
+  font-size: 13px;
+}
+.admin-guide a {
+  color: inherit;
+  text-decoration: none;
+}
+.admin-guide a:hover {
+  text-decoration: underline;
+}
+@media (max-width: 600px) {
+  .admin-guide {
+    flex-wrap: wrap;
+  }
+  .admin-guide span {
+    order: 3;
+    flex-basis: 100%;
+    font-size: 12px;
+  }
+}

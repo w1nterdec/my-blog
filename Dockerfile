@@ -1,17 +1,11 @@
-# Base stage for building the static files
-FROM node:lts AS base
+FROM node:24-bookworm-slim AS build
 WORKDIR /app
-
-# Install pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
-
-COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile
-
+COPY package.json package-lock.json ./
+RUN npm ci
 COPY . .
-RUN pnpm run build
+RUN npm run build
 
-# Runtime stage for serving the application
-FROM nginx:mainline-alpine-slim AS runtime
-COPY --from=base /app/dist /usr/share/nginx/html
+FROM nginx:stable-alpine AS runtime
+COPY infrastructure/nginx-static.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/dist /usr/share/nginx/html
 EXPOSE 80

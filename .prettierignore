@@ -15,3 +15,5 @@
 
 # Ignore MDX files
 *.mdx
+public/admin/vendor/
+.private/

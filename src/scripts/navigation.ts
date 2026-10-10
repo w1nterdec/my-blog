@@ -82,7 +82,12 @@ function setupNavigation() {
           联系我: "find-me",
           网站致谢: "a-little-thank-you",
         };
-        let anchor = decodeURIComponent(location.hash.slice(1));
+        let anchor = location.hash.slice(1);
+        try {
+          anchor = decodeURIComponent(anchor);
+        } catch {
+          // A malformed external hash must not prevent navigation from binding.
+        }
         if (link.pathname.includes("/about")) {
           anchor =
             link.hreflang === "en"

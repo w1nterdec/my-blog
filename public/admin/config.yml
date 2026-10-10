@@ -1,0 +1,287 @@
+backend:
+  name: github
+  repo: w1nterdec/my-blog-content
+  branch: main
+  base_url: https://chenzhixing.bbroot.com
+  auth_endpoint: api/admin/auth
+  squash_merges: true
+locale: zh_Hans
+publish_mode: editorial_workflow
+site_url: https://chenzhixing.bbroot.com
+display_url: https://chenzhixing.bbroot.com
+logo_url: /favicon.svg
+media_folder: media
+public_folder: /media
+slug:
+  encoding: ascii
+  clean_accents: true
+  sanitize_replacement: "-"
+editor:
+  preview: true
+collections:
+  - name: posts
+    label: 随笔
+    folder: posts
+    create: true
+    extension: md
+    format: yaml-frontmatter
+    slug: "{{slug}}"
+    identifier_field: title
+    sortable_fields:
+      - pubDatetime
+      - title
+    fields:
+      - name: title
+        label: 标题
+        widget: string
+      - name: description
+        label: 摘要
+        widget: text
+      - &a2
+        name: pubDatetime
+        label: 发布时间（可设未来，按时区显示）
+        widget: datetime
+        format: YYYY-MM-DDTHH:mm:ssZ
+        picker_utc: false
+      - name: author
+        label: 作者
+        widget: string
+        required: false
+      - name: tags
+        label: 标签
+        widget: list
+        default:
+          - 随笔
+      - name: featured
+        label: 置顶 / 精选
+        widget: boolean
+        default: false
+      - &a1
+        name: draft
+        label: 暂不公开 / 撤回
+        widget: boolean
+        default: false
+        required: false
+      - name: ogImage
+        label: 封面
+        widget: image
+        required: false
+        media_library:
+          config:
+            multiple: false
+      - name: body
+        label: 正文（可视化 / Markdown，支持穿插图片）
+        widget: markdown
+  - name: journal
+    label: 生活与站点
+    files:
+      - name: journal
+        label: 近况、地图、摄影、音乐、碎碎念
+        file: settings/journal.json
+        format: json
+        fields:
+          - name: personal
+            label: 个人近况
+            widget: object
+            fields:
+              - name: name
+                label: 名字
+                widget: string
+              - name: signature
+                label: 签名
+                widget: string
+              - name: avatar
+                label: 头像
+                widget: image
+                required: true
+                media_library:
+                  config:
+                    multiple: false
+              - name: location
+                label: 所在城市
+                widget: string
+              - name: status
+                label: 近期状态
+                widget: text
+              - name: project
+                label: 项目
+                widget: object
+                fields:
+                  - name: name
+                    label: 项目名
+                    widget: string
+                  - name: description
+                    label: 介绍
+                    widget: text
+                  - name: url
+                    label: 公开链接
+                    widget: string
+          - name: places
+            label: 城市与故事
+            widget: list
+            fields:
+              - name: name
+                label: 城市
+                widget: string
+              - name: coordinates
+                label: 经度、纬度
+                widget: list
+                allow_add: false
+                min: 2
+                max: 2
+                field:
+                  name: coordinate
+                  label: 坐标
+                  widget: number
+                  value_type: float
+              - name: residence
+                label: 居住状态
+                widget: select
+                options:
+                  - 现居
+                  - 曾居
+                required: false
+              - name: visited
+                label: 曾到访
+                widget: boolean
+                default: true
+              - name: description
+                label: 城市故事
+                widget: text
+            summary: "{{fields.title}}{{fields.artist}}{{fields.name}}"
+          - name: photos
+            label: 映 · 精选摄影（拖动排序）
+            widget: list
+            fields:
+              - name: title
+                label: 作品名
+                widget: string
+              - name: src
+                label: 展示照片
+                widget: image
+                required: true
+                media_library:
+                  config:
+                    multiple: false
+              - name: alt
+                label: 图片描述（无障碍）
+                widget: string
+              - name: category
+                label: 分类
+                widget: select
+                options:
+                  - 人像
+                  - 猫犬
+                  - 风光
+              - name: date
+                label: 拍摄日期
+                widget: string
+                required: false
+              - name: location
+                label: 城市
+                widget: string
+                required: false
+              - name: camera
+                label: 器材 / 参数
+                widget: string
+                required: false
+              - name: story
+                label: 照片故事
+                widget: text
+                required: false
+              - *a1
+            summary: "{{fields.title}}{{fields.artist}}{{fields.name}}"
+            required: false
+          - name: music
+            label: 聆 · 音乐（拖动排序）
+            widget: list
+            fields:
+              - name: id
+                label: 唯一标识（英文）
+                widget: string
+              - name: artist
+                label: 歌手
+                widget: string
+              - name: title
+                label: 歌曲 / 专辑名
+                widget: string
+                required: false
+              - name: kind
+                label: 类型
+                widget: select
+                options:
+                  - 歌手
+                  - 专辑
+                  - 歌曲
+                  - 歌单
+                default: 歌手
+              - name: cover
+                label: 封面
+                widget: image
+                required: false
+                media_library:
+                  config:
+                    multiple: false
+              - name: thought
+                label: 听歌感想
+                widget: text
+                required: false
+              - name: spotify
+                label: Spotify 分享链接
+                widget: string
+                required: false
+              - name: qq
+                label: QQ 音乐分享链接
+                widget: string
+                required: false
+              - *a1
+            summary: "{{fields.title}}{{fields.artist}}{{fields.name}}"
+            required: false
+          - name: notes
+            label: 碎碎念（公开才会进入网站）
+            widget: list
+            fields:
+              - name: id
+                label: 唯一标识（英文）
+                widget: string
+              - *a2
+              - name: body
+                label: 短文字
+                widget: text
+              - name: island
+                label: 仅放在孤岛彩蛋
+                widget: boolean
+                default: false
+              - *a1
+            summary: "{{fields.title}}{{fields.artist}}{{fields.name}}"
+            required: false
+          - name: games
+            label: 游 · 游戏（暂时只放小卡片）
+            widget: list
+            fields:
+              - name: id
+                label: 唯一标识（英文）
+                widget: string
+              - name: title
+                label: 游戏名
+                widget: string
+              - name: platform
+                label: 平台
+                widget: string
+              - name: status
+                label: 游玩状态
+                widget: string
+              - name: score
+                label: 评分 / 10
+                widget: number
+                required: false
+                value_type: float
+                min: 0
+                max: 10
+              - name: thought
+                label: 感想
+                widget: text
+                required: false
+              - *a1
+            summary: "{{fields.title}}{{fields.artist}}{{fields.name}}"
+            required: false
