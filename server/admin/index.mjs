@@ -4,6 +4,12 @@ import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 export function createAdminServer(config = process.env, fetcher = fetch) {
   const origin = new URL(config.ADMIN_ORIGIN ?? 'https://chenzhixing.bbroot.com').origin;
+  const editorOrigins = [origin];
+  if (config.ADMIN_LOCAL_EDITOR_ORIGIN) {
+    const local = new URL(config.ADMIN_LOCAL_EDITOR_ORIGIN);
+    if (local.protocol !== 'http:' || !['127.0.0.1', 'localhost'].includes(local.hostname) || local.href !== `${local.origin}/`) throw new Error('ADMIN_LOCAL_EDITOR_ORIGIN must be an exact HTTP loopback origin');
+    editorOrigins.push(local.origin);
+  }
   const owner = config.ADMIN_GITHUB_USER ?? 'w1nterdec';
   const callback = `${origin}/api/admin/callback`;
   const pending = new Map();
@@ -55,7 +61,35 @@ export function createAdminServer(config = process.env, fetcher = fetch) {
         const safe = value => JSON.stringify(value).replace(/</g,'\\u003c');
         const payload = `authorization:github:success:${JSON.stringify({token:result.access_token,provider:'github'})}`;
         res.writeHead(200, {'Content-Type':'text/html; charset=utf-8','Content-Security-Policy':`default-src 'none'; script-src 'nonce-${nonce}'; base-uri 'none'; frame-ancestors 'none'`});
-        res.end(`<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>知行 · 登录完成</title><p>登录完成，正在回到管理后台。</p><script nonce="${nonce}">const origin=${safe(origin)};window.addEventListener('message',function receive(event){if(event.origin!==origin||event.source!==window.opener||event.data!=='authorizing:github')return;window.removeEventListener('message',receive);window.opener.postMessage(${safe(payload)},origin);});window.opener?.postMessage('authorizing:github',origin);</script></html>`); return;
+        res.end(`<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>知行 · 登录完成</title><p id="login-status" role="status">GitHub 登录完成，正在将登录结果交回原管理页。</p><p><a href="${origin}/admin/" rel="noopener">打开正式管理入口</a></p><script nonce="${nonce}">
+const origin=${safe(origin)};
+const editorOrigins=${safe(editorOrigins)};
+const status=document.getElementById('login-status');
+const opener=window.opener;
+if(!opener||opener.closed){
+  status.textContent='登录弹窗与管理页的连接已断开。请回到原管理页，重新点击 GitHub 登录，并保留原页面。';
+}else{
+  let retry;
+  let timeout;
+  const stop=()=>{clearInterval(retry);clearTimeout(timeout);window.removeEventListener('message',receive);};
+  function receive(event){
+    if(event.source!==window.opener||event.data!=='authorizing:github')return;
+    if(!editorOrigins.includes(event.origin)){
+      stop();
+      status.textContent='登录结果无法交回当前地址。此地址不在登录服务的允许列表中。请关闭本弹窗，返回原页面。';
+      return;
+    }
+    stop();
+    opener.postMessage(${safe(payload)},event.origin);
+    status.textContent='已将登录结果交回管理页。请切回原页面；此弹窗可以关闭。';
+  }
+  window.addEventListener('message',receive);
+  const notify=()=>{if(opener.closed){stop();status.textContent='原管理页已关闭。请重新打开管理页并登录。';return;}for(const target of editorOrigins)opener.postMessage('authorizing:github',target);};
+  retry=setInterval(notify,500);
+  timeout=setTimeout(()=>{stop();status.textContent='未收到原管理页的确认。请核对管理页地址是否已接入登录服务，保留原页面，关闭本弹窗后重新登录。';},10000);
+  notify();
+}
+</script></html>`); return;
       }
       return reply(404,'Not found');
     } catch { reply(502,'认证服务暂时不可用，请稍后重试。'); }
