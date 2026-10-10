@@ -1,4 +1,195 @@
 /* Annual edition: neutral paper, moss accents, and quiet everyday modules. */
+.music-grid.music-stack {
+  --record-spread: 16px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  column-gap: 28px;
+  row-gap: 16px;
+  padding: 12px 8px 4px;
+  isolation: isolate;
+}
+.music-stack::before {
+  content: "";
+  grid-column: 1;
+  grid-row: 1;
+  height: 270px;
+}
+.music-stack .music-card {
+  display: contents;
+}
+.music-stack .record-cover {
+  grid-column: 1;
+  grid-row: 1;
+  align-self: center;
+  justify-self: start;
+  width: min(72%, 230px);
+  height: auto;
+  aspect-ratio: 1;
+  border: 1px solid #ffffff30;
+  border-radius: 16px;
+  cursor: pointer;
+  text-align: left;
+  box-shadow:
+    0 5px 10px #00000010,
+    0 16px 35px #00000012;
+  z-index: var(--record-depth);
+  transform: translateX(calc(var(--record-index) * var(--record-spread)))
+    translateY(calc(var(--record-index) * 3px))
+    rotate(calc(var(--record-index) * 4deg));
+  transition:
+    transform 550ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 550ms;
+}
+.music-stack .music-card[data-active="true"] .record-cover {
+  z-index: 20;
+  transform: translateX(calc(var(--record-index) * var(--record-spread)))
+    translateY(-10px) rotate(-3deg);
+  box-shadow:
+    0 8px 15px #00000014,
+    0 24px 40px #00000018;
+}
+.music-stack .record-cover:focus-visible,
+.record-selectors button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 5px;
+}
+.music-stack .record-placeholder {
+  min-height: 100%;
+  background-image: linear-gradient(
+    135deg,
+    #ffffff30,
+    transparent 55%,
+    #00000008
+  );
+}
+.music-stack .record-disc {
+  width: 78%;
+  height: auto;
+  aspect-ratio: 1;
+  transform: translateX(18%);
+}
+.music-stack .music-card[data-active="true"] .record-disc {
+  transform: translateX(24%) rotate(35deg);
+}
+.music-stack .record-initial {
+  font-size: 72px;
+  top: 12px;
+  bottom: auto;
+  left: 16px;
+  opacity: 0.8;
+}
+.record-cover-label {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 12px;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: #26322a;
+  text-shadow: 0 1px 8px #ffffff70;
+}
+[data-theme="dark"] .record-cover-label {
+  color: #f0eee6;
+  text-shadow: 0 1px 8px #00000070;
+}
+.music-stack .record-info {
+  display: none;
+  grid-column: 2;
+  grid-row: 1;
+  align-self: center;
+}
+.music-stack .music-card[data-active="true"] .record-info {
+  display: block;
+  animation: record-words 300ms ease both;
+}
+.music-stack .record-info h3 {
+  font-size: clamp(22px, 3vw, 30px);
+  letter-spacing: -0.04em;
+  margin: 12px 0 10px;
+}
+.music-stack .record-info p {
+  line-height: 1.8;
+}
+.record-selectors {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  display: flex;
+  gap: 4px 12px;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+.record-selectors button {
+  min-height: 44px;
+  padding: 8px 6px;
+  font-size: 12px;
+  color: var(--muted-foreground);
+  border-radius: 8px;
+  transition:
+    color 200ms,
+    background 200ms;
+}
+.record-selectors button span {
+  font-size: 10px;
+  margin-right: 7px;
+  opacity: 0.55;
+  font-variant-numeric: tabular-nums;
+}
+.record-selectors button[aria-pressed="true"] {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+@keyframes record-words {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (hover: hover) and (pointer: fine) {
+  .music-stack:hover,
+  .music-stack:focus-within {
+    --record-spread: 22px;
+  }
+}
+@media (max-width: 600px) {
+  .music-grid.music-stack {
+    grid-template-columns: minmax(0, 1fr);
+    padding-inline: 12px;
+    row-gap: 10px;
+  }
+  .music-stack::before {
+    height: 255px;
+  }
+  .music-stack .record-cover {
+    width: min(72%, 210px);
+  }
+  .music-stack .record-info {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .music-stack .record-info h3 {
+    font-size: 24px;
+  }
+  .music-stack .record-initial {
+    font-size: 64px;
+  }
+  .record-selectors {
+    grid-row: 3;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .music-stack .record-cover,
+  .music-stack .record-disc {
+    transition: none;
+  }
+  .music-stack .music-card[data-active="true"] .record-info {
+    animation: none;
+  }
+}
 .home-hero {
   position: relative;
   isolation: isolate;

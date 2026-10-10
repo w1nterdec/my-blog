@@ -48,9 +48,35 @@
   "photos": [],
   "music": [
     {
-      "id": "justin-bieber",
+      "id": "justin-swag",
+      "title": "SWAG",
       "artist": "Justin Bieber",
-      "kind": "歌手",
+      "kind": "专辑",
+      "spotify": "https://open.spotify.com/album/5vD5M5VW62LL78Ko8x0CVZ",
+      "draft": false
+    },
+    {
+      "id": "justin-stay",
+      "title": "STAY",
+      "artist": "The Kid LAROI · Justin Bieber",
+      "kind": "单曲",
+      "spotify": "https://open.spotify.com/track/5HCyWlXZPP0y6Gqq8TgA20",
+      "draft": false
+    },
+    {
+      "id": "justin-peaches",
+      "title": "Peaches",
+      "artist": "Justin Bieber · Daniel Caesar · GIVĒON",
+      "kind": "单曲",
+      "spotify": "https://open.spotify.com/track/1bx1nJqqRtSse54ZSGQdCV",
+      "draft": false
+    },
+    {
+      "id": "justin-heartbreaker",
+      "title": "Heartbreaker",
+      "artist": "Justin Bieber",
+      "kind": "单曲",
+      "spotify": "https://open.spotify.com/track/0a2SPjgz8tix3HBZVZrwsI",
       "draft": false
     },
     {

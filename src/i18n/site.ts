@@ -15,6 +15,12 @@ const english: Record<string, string> = {
   "几首歌，一点生活，偶尔停下来。":
     "A few songs, little moments, and room to pause.",
   "把喜欢的声音，留在身边。": "Keep a little space for the sounds you love.",
+  偏爱: "THE FAVORITE",
+  其他收藏: "ALSO ON THE SHELF",
+  挑一张唱片: "Choose a record",
+  专辑: "Album",
+  单曲: "Single",
+  "封面与听歌感想，慢慢补上。": "Cover art and listening notes will follow.",
   "先记下喜欢的名字，专辑与感想慢慢补上。":
     "Favorite names first. Albums and listening notes will follow.",
   "去听听 ↗": "Listen elsewhere ↗",

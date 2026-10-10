@@ -5,6 +5,10 @@ import { getAssetPath } from "@/utils/withBase";
 import { getRelativeLocaleUrl } from "astro:i18n";
 const s = localize(Astro.currentLocale);
 const locale = Astro.currentLocale ?? "zh-CN";
+const isJustin = (artist: string) => /justin\s+bieber/i.test(artist);
+const records = [...music].sort(
+  (a, b) => Number(isJustin(b.artist)) - Number(isJustin(a.artist))
+);
 const external = (value?: string) => {
   try {
     const url = new URL(value ?? "");
@@ -79,11 +83,22 @@ const external = (value?: string) => {
     </span>
   </div>
   <p class="module-intro">{s("把喜欢的声音，留在身边。")}</p>
-  <div class="music-grid">
+  <div class="music-grid music-stack" data-music-stack>
     {
-      music.map((item, index) => (
-        <article class="music-card">
-          <div class:list={["record-cover", `record-tone-${index % 4}`]}>
+      records.map((item, index) => (
+        <article
+          class="music-card"
+          data-record={index}
+          data-active={index === 0 ? "true" : "false"}
+        >
+          <button
+            type="button"
+            class:list={["record-cover", `record-tone-${index % 4}`]}
+            style={`--record-index:${records.length > 1 ? (index * 3) / (records.length - 1) : 0};--record-depth:${records.length - index}`}
+            data-record-cover
+            aria-label={`${item.artist}${item.title ? ` · ${item.title}` : ""}`}
+            aria-pressed={index === 0}
+          >
             {item.cover ? (
               <img
                 src={getAssetPath(item.cover)}
@@ -101,10 +116,15 @@ const external = (value?: string) => {
                 <span class="record-initial">{item.artist.slice(0, 1)}</span>
               </div>
             )}
-          </div>
+            <span class="record-cover-label">{item.title ?? item.artist}</span>
+          </button>
           <div class="record-info">
-            <h3>{item.artist}</h3>
-            {item.title && <p>{item.title}</p>}
+            <p class="eyebrow">
+              {s(isJustin(item.artist) ? "偏爱" : "其他收藏")}
+            </p>
+            <h3>{item.title ?? item.artist}</h3>
+            {item.title && <p>{item.artist}</p>}
+            {item.title && <p class="record-kind">{s(item.kind)}</p>}
             {item.thought && (
               <p class="record-thought" lang="zh-CN">
                 {item.thought}
@@ -134,13 +154,29 @@ const external = (value?: string) => {
         </article>
       ))
     }
+    <div class="record-selectors" role="group" aria-label={s("挑一张唱片")}>
+      {
+        records.map((item, index) => (
+          <button
+            type="button"
+            data-record-select={index}
+            aria-pressed={index === 0}
+          >
+            <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+            {item.title ??
+              (isJustin(item.artist) ? "Justin" : item.artist.split(" · ")[0])}
+          </button>
+        ))
+      }
+    </div>
   </div>
   {
     !music.some(item => item.cover || item.thought) && (
-      <p class="module-note">{s("先记下喜欢的名字，专辑与感想慢慢补上。")}</p>
+      <p class="module-note">{s("封面与听歌感想，慢慢补上。")}</p>
     )
   }
 </section>
 <script>
   import "@/scripts/mouse";
+  import "@/scripts/music-stack";
 </script>
