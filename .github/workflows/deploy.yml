@@ -30,14 +30,12 @@ jobs:
           key: ${{ secrets.ECS_SSH_KEY }}
           port: ${{ secrets.ECS_PORT }}
           script: |
-            echo '--- Static server routing ---'
-            sudo nginx -T 2>&1 | grep -E 'configuration file|server_name|listen |root |try_files|ssl_certificate|error_page' || true
-            echo '--- Release directories ---'
-            ls -ld /var/www/astro-blog /var/www/astro-blog/current /var/www/astro-releases 2>/dev/null || true
-            echo '--- Certificate renewal service ---'
-            systemctl list-timers --all --no-pager | grep -E 'certbot|acme' || true
-            echo '--- Node runtime ---'
-            node --version 2>/dev/null || true
+            id
+            command -v nginx || true
+            sudo -n -l 2>&1 || true
+            grep -R -E 'server_name|listen |root |try_files|ssl_certificate|error_page' /etc/nginx/sites-enabled /etc/nginx/conf.d 2>/dev/null || true
+            ls -ld /etc/nginx /var/www/astro-blog /opt /usr/local/bin 2>/dev/null || true
+            command -v node || true
   build-and-deploy:
     if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || inputs.operation == 'deploy')
     runs-on: ubuntu-latest
