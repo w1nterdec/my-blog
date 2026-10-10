@@ -18,3 +18,122 @@ img {
 pre {
   white-space: pre-wrap;
 }
+.preview-eyebrow {
+  color: #526b58;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+}
+.preview-badges,
+.preview-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.preview-badge {
+  display: inline-block;
+  margin: 6px 0;
+  border: 1px solid #cdd5cb;
+  border-radius: 20px;
+  padding: 2px 10px;
+  color: #526b58;
+  font-size: 11px;
+}
+.preview-tags {
+  color: #526b58;
+  font-size: 12px;
+  margin: 16px 0;
+}
+.preview-help {
+  font-size: 12px;
+  color: #758075;
+}
+.preview-description {
+  color: #657065;
+  font-size: 17px;
+}
+.preview-cover {
+  width: 100%;
+  max-height: 420px;
+  object-fit: cover;
+  margin: 16px 0;
+}
+.preview-body {
+  margin-top: 28px;
+  overflow-wrap: anywhere;
+}
+.preview-body blockquote,
+.preview-lyrics {
+  border-left: 3px solid #bcc9b8;
+  margin: 20px 0;
+  padding: 4px 16px;
+  background: #eef1e9;
+}
+.preview-body pre {
+  padding: 16px;
+  border-radius: 12px;
+  background: #e9ece5;
+}
+.preview-body table {
+  display: block;
+  overflow-x: auto;
+}
+.preview-profile {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+.preview-profile h1 {
+  margin-bottom: 0;
+}
+.preview-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.preview-section {
+  margin-top: 32px;
+}
+.preview-section h2 {
+  font-size: 21px;
+}
+.preview-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.preview-card {
+  background: #fefdfa;
+  border: 1px solid #e0e3db;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 12px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.preview-card h3 {
+  font-size: 16px;
+  margin: 8px 0;
+}
+.preview-card img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+.preview-card p {
+  font-size: 13px;
+}
+.preview-note {
+  white-space: pre-wrap;
+}
+@media (max-width: 520px) {
+  body {
+    padding: 20px;
+  }
+  .preview-grid {
+    grid-template-columns: 1fr;
+  }
+  .preview-profile {
+    gap: 14px;
+  }
+}
