@@ -1,0 +1,146 @@
+---
+import { music } from "@/data/personal";
+import { localize } from "@/i18n/site";
+import { getAssetPath } from "@/utils/withBase";
+import { getRelativeLocaleUrl } from "astro:i18n";
+const s = localize(Astro.currentLocale);
+const locale = Astro.currentLocale ?? "zh-CN";
+const external = (value?: string) => {
+  try {
+    const url = new URL(value ?? "");
+    return url.protocol === "https:" ? url.href : undefined;
+  } catch {
+    return undefined;
+  }
+};
+---
+
+<section class="music-shelf reveal" aria-labelledby="listening-title">
+  <div class="section-heading">
+    <div>
+      <span class="eyebrow">03 / SOUNDS & SILENCES</span><h2
+        id="listening-title"
+      >
+        聆 <span class="heading-note">{s("音乐")}</span>
+      </h2>
+    </div>
+    <span class="music-mouse-wrap">
+      <button
+        class="little-mouse"
+        type="button"
+        data-mouse
+        aria-label={s("轻轻碰一下鼠鼠")}
+        aria-expanded="false"
+        aria-controls="mouse-note"
+      >
+        <svg viewBox="0 0 80 60" aria-hidden="true"
+          ><path
+            class="mouse-tail"
+            d="M45 42c18 6 27-3 22-10"
+            fill="none"
+            stroke="#a88d7c"
+            stroke-width="3"
+            stroke-linecap="round"></path><ellipse
+            cx="36"
+            cy="39"
+            rx="20"
+            ry="14"
+            fill="#b9aaa0"></ellipse><circle
+            cx="25"
+            cy="20"
+            r="12"
+            fill="#b9aaa0"></circle><circle cx="25" cy="20" r="7" fill="#e2c6ba"
+          ></circle><path
+            d="M34 27q-14-4-22 13q-4 9 12 11h18q12-12-8-24"
+            fill="#c8bcb3"></path><circle cx="22" cy="37" r="3" fill="#303830"
+          ></circle><circle cx="21" cy="36" r="1" fill="white"></circle><circle
+            cx="11"
+            cy="44"
+            r="2.5"
+            fill="#b67d77"></circle><path
+            d="M18 45l-9 5m10-7-11-1"
+            stroke="#847369"
+            stroke-width="1"
+            stroke-linecap="round"></path></svg
+        >
+      </button>
+      <span
+        class="mouse-note"
+        id="mouse-note"
+        data-mouse-note
+        hidden
+        role="status"
+        ><span data-mouse-message>{s("鼠鼠把一粒小种子留给了你。")}</span><a
+          href={getRelativeLocaleUrl(locale, "island")}
+          data-mouse-island
+          hidden>{s("去孤岛坐坐 ↗")}</a
+        ></span
+      >
+    </span>
+  </div>
+  <p class="module-intro">{s("把喜欢的声音，留在身边。")}</p>
+  <div class="music-grid">
+    {
+      music.map((item, index) => (
+        <article class="music-card">
+          <div class:list={["record-cover", `record-tone-${index % 4}`]}>
+            {item.cover ? (
+              <img
+                src={getAssetPath(item.cover)}
+                alt={item.title ?? item.artist}
+                width="360"
+                height="360"
+                loading="lazy"
+                decoding="async"
+              />
+            ) : (
+              <div class="record-placeholder" aria-hidden="true">
+                <span class="record-disc">
+                  <i />
+                </span>
+                <span class="record-initial">{item.artist.slice(0, 1)}</span>
+              </div>
+            )}
+          </div>
+          <div class="record-info">
+            <h3>{item.artist}</h3>
+            {item.title && <p>{item.title}</p>}
+            {item.thought && (
+              <p class="record-thought" lang="zh-CN">
+                {item.thought}
+              </p>
+            )}
+            <div class="music-links">
+              {external(item.spotify) && (
+                <a
+                  href={external(item.spotify)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Spotify ↗
+                </a>
+              )}
+              {external(item.qq) && (
+                <a
+                  href={external(item.qq)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  QQ Music ↗
+                </a>
+              )}
+            </div>
+          </div>
+        </article>
+      ))
+    }
+  </div>
+  {
+    !music.some(item => item.cover || item.thought) && (
+      <p class="module-note">{s("先记下喜欢的名字，专辑与感想慢慢补上。")}</p>
+    )
+  }
+</section>
+<script>
+  import "@/scripts/mouse";
+</script>

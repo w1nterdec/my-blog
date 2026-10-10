@@ -15,15 +15,15 @@
 /* Light theme values */
 :root,
 [data-theme="light"] {
-  --background: #f5f3eb;
-  --foreground: #30372d;
-  --accent: #526b45;
+  --background: #f8f7f3;
+  --foreground: #303630;
+  --accent: #526b58;
   --accent-foreground: #ffffff;
-  --muted: #e9ecdf;
-  --muted-foreground: #687060;
-  --border: #dddfd2;
-  --surface: #fcfbf6;
-  --surface-soft: #edf0e4;
+  --muted: #efeee9;
+  --muted-foreground: #6b716c;
+  --border: #e0e2d9;
+  --surface: #fefdfa;
+  --surface-soft: #f0f2ed;
   --travel: #a16c43;
   --globe-water: #e6ebde;
   --globe-land: #a7ba94;
@@ -32,15 +32,15 @@
 
 /* Dark theme values */
 [data-theme="dark"] {
-  --background: #191e19;
-  --foreground: #e8e9df;
-  --accent: #b2c79c;
+  --background: #191c1b;
+  --foreground: #e8e9e4;
+  --accent: #afc3a7;
   --accent-foreground: #1d2819;
-  --muted: #2b3429;
-  --muted-foreground: #a5af9c;
-  --border: #354032;
-  --surface: #222922;
-  --surface-soft: #293225;
+  --muted: #2b302c;
+  --muted-foreground: #abb2a7;
+  --border: #353b35;
+  --surface: #222724;
+  --surface-soft: #2a302b;
   --travel: #d4a477;
   --globe-water: #252f25;
   --globe-land: #617b52;

@@ -1,0 +1,44 @@
+---
+import { localize } from "@/i18n/site";
+const s = localize(Astro.currentLocale);
+---
+
+<div class="welcome-note" data-welcome hidden>
+  <span aria-hidden="true">✦</span><span
+    >{s("很高兴，你把今天的一点时间留在这里。")}</span
+  ><button type="button" data-welcome-close aria-label={s("收起问候")}
+    >×</button>
+</div>
+<script>
+  let cleanup: (() => void) | undefined;
+  function welcome() {
+    cleanup?.();
+    const note = document.querySelector<HTMLElement>("[data-welcome]");
+    if (!note) return;
+    const controller = new AbortController();
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const dismiss = () => {
+      note.hidden = true;
+    };
+    try {
+      if (
+        !localStorage.getItem("zhixing-welcome-2026") &&
+        !matchMedia("(prefers-reduced-motion: reduce)").matches
+      ) {
+        localStorage.setItem("zhixing-welcome-2026", "1");
+        note.hidden = false;
+        timer = setTimeout(dismiss, 12000);
+      }
+    } catch {}
+    note
+      .querySelector("[data-welcome-close]")
+      ?.addEventListener("click", dismiss, { signal: controller.signal });
+    cleanup = () => {
+      controller.abort();
+      clearTimeout(timer);
+    };
+  }
+  welcome();
+  document.addEventListener("astro:page-load", welcome);
+  document.addEventListener("astro:before-swap", () => cleanup?.());
+</script>

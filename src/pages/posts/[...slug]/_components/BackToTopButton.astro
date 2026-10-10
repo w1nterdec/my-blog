@@ -36,52 +36,72 @@ const t = useTranslations(Astro.currentLocale);
 </div>
 
 <script is:inline data-astro-rerun>
-  function backToTop() {
-    const rootElement = document.documentElement;
-    const btnContainer = document.querySelector("#btt-btn-container");
-    const backToTopBtn = document.querySelector("[data-button='back-to-top']");
-    const progressIndicator = document.querySelector("#progress-indicator");
-
-    if (!rootElement || !btnContainer || !backToTopBtn || !progressIndicator)
-      return;
-
-    backToTopBtn.addEventListener("click", () => {
-      document.body.scrollTop = 0;
-      document.documentElement.scrollTop = 0;
-    });
-
-    let lastVisible = null;
-    function handleScroll() {
-      const scrollTotal = rootElement.scrollHeight - rootElement.clientHeight;
-      const scrollTop = rootElement.scrollTop;
-      const scrollPercent = Math.floor((scrollTop / scrollTotal) * 100);
-
-      progressIndicator.style.setProperty(
-        "background-image",
-        `conic-gradient(var(--accent), var(--accent) ${scrollPercent}%, transparent ${scrollPercent}%)`
+  (() => {
+    window.__backToTopCleanup?.();
+    const controller = new AbortController();
+    const { signal } = controller;
+    function backToTop() {
+      const rootElement = document.documentElement;
+      const btnContainer = document.querySelector("#btt-btn-container");
+      const backToTopBtn = document.querySelector(
+        "[data-button='back-to-top']"
       );
+      const progressIndicator = document.querySelector("#progress-indicator");
 
-      const isVisible = scrollTop / scrollTotal > 0.3;
+      if (!rootElement || !btnContainer || !backToTopBtn || !progressIndicator)
+        return;
 
-      if (isVisible !== lastVisible) {
-        btnContainer.classList.toggle("opacity-100", isVisible);
-        btnContainer.classList.toggle("translate-y-0", isVisible);
-        btnContainer.classList.toggle("opacity-0", !isVisible);
-        btnContainer.classList.toggle("translate-y-14", !isVisible);
-        lastVisible = isVisible;
+      backToTopBtn.addEventListener("click", () => {
+        document.body.scrollTop = 0;
+        document.documentElement.scrollTop = 0;
+      });
+
+      let lastVisible = null;
+      function handleScroll() {
+        const scrollTotal = rootElement.scrollHeight - rootElement.clientHeight;
+        const scrollTop = rootElement.scrollTop;
+        const scrollPercent =
+          scrollTotal > 0
+            ? Math.min(100, Math.floor((scrollTop / scrollTotal) * 100))
+            : 0;
+
+        progressIndicator.style.setProperty(
+          "background-image",
+          `conic-gradient(var(--accent), var(--accent) ${scrollPercent}%, transparent ${scrollPercent}%)`
+        );
+
+        const isVisible = scrollTotal > 0 && scrollTop / scrollTotal > 0.3;
+
+        if (isVisible !== lastVisible) {
+          btnContainer.classList.toggle("opacity-100", isVisible);
+          btnContainer.classList.toggle("translate-y-0", isVisible);
+          btnContainer.classList.toggle("opacity-0", !isVisible);
+          btnContainer.classList.toggle("translate-y-14", !isVisible);
+          lastVisible = isVisible;
+        }
       }
+
+      let ticking = false;
+      document.addEventListener(
+        "scroll",
+        () => {
+          if (!ticking) {
+            window.requestAnimationFrame(() => {
+              handleScroll();
+              ticking = false;
+            });
+            ticking = true;
+          }
+        },
+        { passive: true, signal }
+      );
+      handleScroll();
     }
-
-    let ticking = false;
-    document.addEventListener("scroll", () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          handleScroll();
-          ticking = false;
-        });
-        ticking = true;
-      }
+    backToTop();
+    window.__backToTopCleanup = () => controller.abort();
+    document.addEventListener("astro:before-swap", window.__backToTopCleanup, {
+      once: true,
+      signal,
     });
-  }
-  backToTop();
+  })();
 </script>

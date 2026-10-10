@@ -1,0 +1,76 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import MusicShelf from "@/components/MusicShelf.astro";
+import PersonalSidebar from "@/components/PersonalSidebar.astro";
+import { notes, games } from "@/data/personal";
+import { localize } from "@/i18n/site";
+const s = localize(Astro.currentLocale);
+const publicNotes = notes
+  .filter(note => !note.island)
+  .sort((a, b) => Date.parse(b.pubDatetime) - Date.parse(a.pubDatetime));
+---
+
+<Layout
+  title={s("日常 · 知行博客")}
+  description={s("几首歌，一点生活，偶尔停下来。")}
+>
+  <Header /><main id="main-content" class="wide-layout home-grid life-page">
+    <div class="home-main">
+      <header class="page-heading reveal">
+        <span class="eyebrow">LITTLE THINGS / EVERYDAY</span><h1
+          class="display-title"
+        >
+          {s("日常")}<span class="title-dot">.</span>
+        </h1><p>{s("几首歌，一点生活，偶尔停下来。")}</p>
+      </header>
+      <MusicShelf />
+      <section class="little-notes reveal">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">A POCKET OF MOMENTS</span><h2>
+              {s("碎碎念")}
+            </h2>
+          </div>
+        </div><p class="module-intro">{s("小小的事，也值得记下来。")}</p>
+        {
+          publicNotes.length ? (
+            <ol>
+              {publicNotes.map(note => (
+                <li>
+                  <time datetime={note.pubDatetime}>
+                    {new Intl.DateTimeFormat(
+                      Astro.currentLocale === "en" ? "en-GB" : "zh-CN",
+                      { dateStyle: "medium", timeZone: "Asia/Shanghai" }
+                    ).format(new Date(note.pubDatetime))}
+                  </time>
+                  <p lang="zh-CN">{note.body}</p>
+                </li>
+              ))}
+            </ol>
+          ) : (
+            <p class="note-empty">{s("今天的碎碎念，还在口袋里。")}</p>
+          )
+        }
+      </section>
+      {
+        games.length > 0 && (
+          <section class="game-mini reveal" aria-label="Games">
+            <span class="eyebrow">游 / PLAY</span>
+            {games.map(game => (
+              <div>
+                <h2>{game.title}</h2>
+                <span>
+                  {game.platform} · {s(game.status)}
+                </span>
+                {typeof game.score === "number" && <p>{game.score} / 10</p>}
+                {game.thought && <p lang="zh-CN">{game.thought}</p>}
+              </div>
+            ))}
+          </section>
+        )
+      }
+    </div><PersonalSidebar />
+  </main><Footer />
+</Layout>

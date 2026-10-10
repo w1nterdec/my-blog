@@ -21,7 +21,7 @@ pnpm-debug.log*
 .private/
 .content-state/
 public/uploads/
-src/content/posts/imported/
+src/content/posts/_published/
 src/data/generated/
 *.pem
 *.key

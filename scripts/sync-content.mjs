@@ -22,7 +22,7 @@ export function readPost(source) {
 }
 export async function exportContent(contentDir, outputRoot = root, now = Date.now()) {
   const source = await realpath(resolve(contentDir));
-  const postDir = resolve(outputRoot, 'src/content/posts/imported');
+  const postDir = resolve(outputRoot, 'src/content/posts/_published');
   const mediaDir = resolve(outputRoot, 'public/uploads');
   const dataDir = resolve(outputRoot, 'src/data/generated');
   if (source === outputRoot || !relative(source, postDir).startsWith('..'))

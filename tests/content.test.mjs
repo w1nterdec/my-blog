@@ -30,12 +30,12 @@ test("export excludes private bodies, unused photos, extra fields, and original 
     await writeFile(join(content, "posts/public.md"), '---\ntitle: public\ndescription: summary\npubDatetime: 2020-01-01T00:00:00Z\n---\n![test](/media/real.jpg)');
     const out = await exportContent(content, output);
     assert.equal(JSON.stringify(out).includes("PRIVATE"), false);
-    assert.deepEqual(await readdir(join(output, "src/content/posts/imported")), ["public.md"]);
+    assert.deepEqual(await readdir(join(output, "src/content/posts/_published")), ["public.md"]);
     const images = await readdir(join(output, "public/uploads"));
     assert.equal(images.length, 1);
     const metadata = await sharp(join(output, "public/uploads", images[0])).metadata();
     assert.equal(metadata.width, 1920);
     assert.equal(metadata.exif, undefined);
-    assert.equal((await readFile(join(output, "src/content/posts/imported/public.md"), "utf8")).includes("/media/"), false);
+    assert.equal((await readFile(join(output, "src/content/posts/_published/public.md"), "utf8")).includes("/media/"), false);
   } finally { await rm(dir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 }); }
 });

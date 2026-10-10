@@ -13,7 +13,7 @@ logo_url: /favicon.svg
 media_folder: media
 public_folder: /media
 slug:
-  encoding: ascii
+  encoding: unicode
   clean_accents: true
   sanitize_replacement: "-"
 editor:

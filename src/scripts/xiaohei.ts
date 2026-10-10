@@ -62,6 +62,8 @@ function setupXiaohei() {
   const reduced = matchMedia("(prefers-reduced-motion: reduce)");
   const finePointer = matchMedia("(hover: hover) and (pointer: fine)");
   const preferences = readPreferences();
+  let peeking = false;
+  const isFollowing = () => preferences.following || peeking;
   const timers = new Set<ReturnType<typeof setTimeout>>();
   function later(fn: () => void, ms: number) {
     const id = setTimeout(() => {
@@ -88,6 +90,8 @@ function setupXiaohei() {
     const path = location.pathname
       .replace(/^\/en(?=\/|$)/, "")
       .replace(/\/+$/, "");
+    if (path.endsWith("/life")) return "music";
+    if (path.endsWith("/island")) return "island";
     if (path.endsWith("/photography")) return "photos";
     if (path.endsWith("/about")) return "about";
     if (path.endsWith("/archives")) return "archives";
@@ -159,17 +163,17 @@ function setupXiaohei() {
     render(performance.now());
   }
   function reflect() {
-    companion.hidden = !preferences.following || blocked || !laneAvailable;
-    walker.hidden = preferences.following;
+    companion.hidden = !isFollowing() || blocked || !laneAvailable;
+    walker.hidden = isFollowing();
     quietButton.textContent = preferences.quiet
       ? s("可以说话了")
       : s("少说一点");
     quietButton.setAttribute("aria-pressed", String(preferences.quiet));
-    followButton.textContent = preferences.following
+    followButton.textContent = isFollowing()
       ? s("回到小院")
       : s("陪我读一会儿");
-    followButton.setAttribute("aria-pressed", String(preferences.following));
-    status.textContent = preferences.following
+    followButton.setAttribute("aria-pressed", String(isFollowing()));
+    status.textContent = isFollowing()
       ? s("正在陪你读书")
       : reduced.matches
         ? s("安静地陪着你")
@@ -245,7 +249,7 @@ function setupXiaohei() {
       return;
     activeAnchor =
       anchor ??
-      (preferences.following ? companionCat : gardenVisible ? walker : header);
+      (isFollowing() ? companionCat : gardenVisible ? walker : header);
     if (activeAnchor.hidden || !activeAnchor.getClientRects().length)
       activeAnchor = header;
     manualBubble = manual;
@@ -296,6 +300,7 @@ function setupXiaohei() {
   }
   function follow(value: boolean) {
     preferences.following = value;
+    peeking = false;
     save();
     closeBubble();
     x = value ? 0.78 : 0.28;
@@ -319,14 +324,14 @@ function setupXiaohei() {
   }
   function changeTopic(next: XiaoheiTopic, text?: string) {
     topic = next;
-    if ((preferences.following || gardenVisible) && !seen.has(next)) {
+    if ((isFollowing() || gardenVisible) && !seen.has(next)) {
       seen.add(next);
       speak(next, text);
     }
   }
   function safeBounds() {
-    const width = preferences.following ? window.innerWidth : stageWidth;
-    if (preferences.following && safeLanes.length) {
+    const width = isFollowing() ? window.innerWidth : stageWidth;
+    if (isFollowing() && safeLanes.length) {
       const current = x * width;
       const lane = [...safeLanes].sort(
         (a, b) =>
@@ -338,7 +343,7 @@ function setupXiaohei() {
     return { width, min: 12 / width, max: Math.max(0.1, (width - 84) / width) };
   }
   function updateSafeLane() {
-    if (!preferences.following) {
+    if (!isFollowing()) {
       laneAvailable = true;
       return;
     }
@@ -406,7 +411,7 @@ function setupXiaohei() {
   function render(now: number) {
     const bounds = safeBounds();
     x = Math.max(bounds.min, Math.min(bounds.max, x));
-    const actor = preferences.following ? companionCat : walker;
+    const actor = isFollowing() ? companionCat : walker;
     const actorMood =
       now < moodUntil
         ? mood
@@ -450,7 +455,7 @@ function setupXiaohei() {
       stretch: s("伸个懒腰"),
       sleep: s("正在打盹"),
     }[actorMood];
-    status.textContent = preferences.following
+    status.textContent = isFollowing()
       ? `${s("陪读中")} · ${label}`
       : reduced.matches
         ? s("安静地陪着你")
@@ -516,7 +521,7 @@ function setupXiaohei() {
     if (destroyed || document.hidden || blocked || reduced.matches) return;
     const dt = Math.min((now - (lastTime || now)) / 1000, 0.055);
     lastTime = now;
-    const moving = gardenVisible || preferences.following;
+    const moving = gardenVisible || isFollowing();
     if (
       moving &&
       now > moodUntil &&
@@ -551,7 +556,7 @@ function setupXiaohei() {
         lastActivity = now;
       }
       if (
-        !preferences.following &&
+        !isFollowing() &&
         Math.abs(speed) > 0.008 &&
         now - lastFoot > 190 &&
         Math.abs(x * stageWidth - lastFootX) > 7
@@ -610,7 +615,7 @@ function setupXiaohei() {
       !document.hidden &&
       !blocked &&
       !reduced.matches &&
-      (headerVisible || gardenVisible || preferences.following)
+      (headerVisible || gardenVisible || isFollowing())
     ) {
       lastTime = 0;
       frame = requestAnimationFrame(tick);
@@ -689,7 +694,7 @@ function setupXiaohei() {
     () => follow(false),
     { signal }
   );
-  followButton.addEventListener("click", () => follow(!preferences.following), {
+  followButton.addEventListener("click", () => follow(!isFollowing()), {
     signal,
   });
   quietButton.addEventListener(
@@ -821,7 +826,7 @@ function setupXiaohei() {
     event => {
       if (
         (event.target instanceof Element && event.target.closest("button")) ||
-        preferences.following
+        isFollowing()
       )
         return;
       closeBubble();
@@ -848,7 +853,7 @@ function setupXiaohei() {
       pointer = { x: event.clientX, y: event.clientY };
       // Companion notices nearby visitors, without chasing across the reading area.
       if (
-        preferences.following &&
+        isFollowing() &&
         event.clientY > innerHeight - 140 &&
         bubble.hidden &&
         performance.now() > moodUntil
@@ -872,7 +877,7 @@ function setupXiaohei() {
       if (city) {
         const name = city.childNodes[0]?.textContent?.trim() ?? "";
         topic = "travel";
-        if (preferences.following && !preferences.quiet)
+        if (isFollowing() && !preferences.quiet)
           later(() => speak("travel", cityWords[name], true), 250);
       }
       const filter = event.target.closest<HTMLButtonElement>(
@@ -886,7 +891,7 @@ function setupXiaohei() {
               ? "portraits"
               : "photos";
         topic = nextTopic;
-        if (preferences.following && !preferences.quiet)
+        if (isFollowing() && !preferences.quiet)
           speak(nextTopic, undefined, true);
       }
     },
@@ -894,6 +899,7 @@ function setupXiaohei() {
   );
   const watched: [string, XiaoheiTopic][] = [
     [".home-photography", "photos"],
+    [".music-shelf", "music"],
     [".writing-section", "posts"],
     [".status-panel", "status"],
     [".project-panel", "project"],
@@ -922,7 +928,7 @@ function setupXiaohei() {
       entries.forEach(entry => {
         if (entry.target === garden) {
           gardenVisible = entry.isIntersecting;
-          if (gardenVisible && !preferences.following && !seen.has("footer")) {
+          if (gardenVisible && !isFollowing() && !seen.has("footer")) {
             seen.add("footer");
             cancel(releaseTimer);
             releaseTimer = later(() => {
@@ -932,7 +938,7 @@ function setupXiaohei() {
           if (!gardenVisible && activeAnchor === walker) closeBubble();
         } else headerVisible = entry.isIntersecting;
       });
-      if (!headerVisible && !gardenVisible && !preferences.following) pause();
+      if (!headerVisible && !gardenVisible && !isFollowing()) pause();
       else start();
       render(performance.now());
     },
@@ -995,6 +1001,36 @@ function setupXiaohei() {
     "scroll",
     () => {
       updateSafeLane();
+      if (
+        scrollY > 420 &&
+        !isFollowing() &&
+        !reduced.matches &&
+        finePointer.matches &&
+        !preferences.quiet &&
+        !blocked
+      ) {
+        let allowed = false;
+        try {
+          allowed = !sessionStorage.getItem("zhixing-cat-peek");
+          if (allowed) sessionStorage.setItem("zhixing-cat-peek", "1");
+        } catch {}
+        if (allowed) {
+          peeking = true;
+          x = 0.88;
+          target = 0.82;
+          companion.classList.add("is-peeking");
+          reflect();
+          updateSafeLane();
+          react("look", 2, companionCat);
+          start();
+          later(() => {
+            peeking = false;
+            companion.classList.remove("is-peeking");
+            reflect();
+            render(performance.now());
+          }, 9000);
+        }
+      }
       if (reduced.matches) render(performance.now());
       if (!bubble.hidden) {
         if (!manualBubble) closeBubble();

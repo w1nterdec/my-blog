@@ -1,65 +1,18 @@
-name: Deploy Astro to VPS
+name: Validate Astro source
 on:
   push:
-    branches: [main]
+    branches: [main, codex/annual-2026]
   workflow_dispatch:
-    inputs:
-      operation:
-        type: choice
-        options: [inspect, bootstrap, deploy]
-        default: inspect
 permissions:
   contents: read
 concurrency:
-  group: production-publication
-  cancel-in-progress: false
+  group: validate-${{ github.ref }}
+  cancel-in-progress: true
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   ASTRO_TELEMETRY_DISABLED: "1"
 jobs:
-  inspect:
-    if: github.event_name == 'workflow_dispatch' && inputs.operation == 'inspect'
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - name: Inspect production configuration without modifying it
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.ECS_HOST }}
-          username: ${{ secrets.ECS_USER }}
-          key: ${{ secrets.ECS_SSH_KEY }}
-          port: ${{ secrets.ECS_PORT }}
-          script: |
-            id
-            command -v nginx || true
-            sudo -n -l 2>&1 || true
-            grep -R -E 'server_name|listen |root |try_files|ssl_certificate|error_page' /etc/nginx/sites-enabled /etc/nginx/conf.d 2>/dev/null || true
-            ls -ld /etc/nginx /var/www/astro-blog /opt /usr/local/bin 2>/dev/null || true
-            command -v node || true
-  bootstrap:
-    if: github.event_name == 'workflow_dispatch' && inputs.operation == 'bootstrap' && github.actor == 'w1nterdec'
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
-        with:
-          node-version: 24
-      - run: npm install --prefix "$RUNNER_TEMP/sealed-box" libsodium-wrappers@0.7.15 --ignore-scripts --no-audit --no-fund
-      - name: Seal deployment settings for private content repository
-        run: node scripts/seal-deploy-settings.mjs
-        env:
-          ECS_HOST: ${{ secrets.ECS_HOST }}
-          ECS_USER: ${{ secrets.ECS_USER }}
-          ECS_PORT: ${{ secrets.ECS_PORT }}
-          ECS_SSH_KEY: ${{ secrets.ECS_SSH_KEY }}
-      - uses: actions/upload-artifact@v4
-        with:
-          name: sealed-content-settings
-          path: sealed-content-settings.json
-          retention-days: 1
-  build-and-deploy:
-    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || inputs.operation == 'deploy')
+  validate:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -71,25 +24,5 @@ jobs:
       - run: npm ci
       - run: npm run lint && node --test tests/*.test.mjs
       - run: npm run build
-      # Until the content pipeline and Nginx release root are connected, retain
-      # the existing deploy path. Production migration is a separate reviewed step.
-      - uses: appleboy/scp-action@v1
-        with:
-          host: ${{ secrets.ECS_HOST }}
-          username: ${{ secrets.ECS_USER }}
-          key: ${{ secrets.ECS_SSH_KEY }}
-          port: ${{ secrets.ECS_PORT }}
-          source: dist/
-          target: /var/www/astro-blog
-          strip_components: 1
-          overwrite: true
-      - uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.ECS_HOST }}
-          username: ${{ secrets.ECS_USER }}
-          key: ${{ secrets.ECS_SSH_KEY }}
-          port: ${{ secrets.ECS_PORT }}
-          script: |
-            sudo chown -R deploy:www-data /var/www/astro-blog
-            sudo find /var/www/astro-blog -type d -exec chmod 775 {} \;
-            sudo find /var/www/astro-blog -type f -exec chmod 664 {} \;
+# Publication is owned by the PRIVATE content repository workflow. It checks
+# the latest source hourly as well as reacting to each content publication.

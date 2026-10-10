@@ -8,6 +8,8 @@ import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import Card from "@/components/Card.astro";
 import PersonalSidebar from "@/components/PersonalSidebar.astro";
+import MusicShelf from "@/components/MusicShelf.astro";
+import WelcomeNote from "@/components/WelcomeNote.astro";
 import { getSortedPosts } from "@/utils/getSortedPosts";
 import { getAssetPath } from "@/utils/withBase";
 import { personal, photos } from "@/data/personal";
@@ -52,6 +54,7 @@ const homePath = getRelativeLocaleUrl(locale, "");
             >{s("订阅 RSS")}<span aria-hidden="true">↗</span></a
           >
         </div>
+        <WelcomeNote />
       </section>
       <section
         class="home-photography reveal"
@@ -165,6 +168,11 @@ const homePath = getRelativeLocaleUrl(locale, "");
           )
         }
       </section>
+      <MusicShelf />
+      <a
+        class="text-link life-entry"
+        href={getRelativeLocaleUrl(locale, "life")}>{s("前往日常 ↗")}</a
+      >
       <p class="home-closing reveal">
         {s("希望这些记录能帮助未来的自己，也给路过的你带来一点启发。")}
       </p>

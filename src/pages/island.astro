@@ -1,0 +1,57 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import { notes } from "@/data/personal";
+import { localize } from "@/i18n/site";
+import { getRelativeLocaleUrl } from "astro:i18n";
+const s = localize(Astro.currentLocale);
+const letters = notes
+  .filter(note => note.island)
+  .sort((a, b) => Date.parse(b.pubDatetime) - Date.parse(a.pubDatetime));
+---
+
+<Layout title={s("孤岛 · 知行博客")} noIndex>
+  <Header /><main
+    id="main-content"
+    class="wide-layout island-page"
+    data-pagefind-ignore="all"
+  >
+    <header class="page-heading reveal">
+      <span class="eyebrow">SOMEWHERE QUIET</span><h1 class="display-title">
+        {s("孤岛")}<span class="title-dot">.</span>
+      </h1><p>{s("这里没有催促。")}</p>
+    </header>
+    <div class="island-scene" aria-hidden="true">
+      <span class="island-moon"></span><span class="island-land"
+        ><i class="island-tree"></i></span
+      ><span class="island-wave wave-one"></span><span
+        class="island-wave wave-two"></span><span class="island-wave wave-three"
+      ></span>
+    </div>
+    <p class="island-invitation">{s("把声音放轻，把今天放下。")}</p>
+    <div class="island-letters">
+      {
+        letters.length ? (
+          letters.map(note => (
+            <article>
+              <>
+                <time datetime={note.pubDatetime}>
+                  {note.pubDatetime.slice(0, 10)}
+                </time>
+                <p lang="zh-CN">{note.body}</p>
+              </>
+            </article>
+          ))
+        ) : (
+          <p class="module-note">{s("岛上的信，还没有送来。")}</p>
+        )
+      }
+    </div>
+    <a
+      class="button-primary"
+      href={getRelativeLocaleUrl(Astro.currentLocale ?? "zh-CN", "life")}
+      >{s("回到岸边 ↗")}</a
+    >
+  </main><Footer />
+</Layout>

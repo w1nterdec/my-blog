@@ -5,6 +5,8 @@ import { getCollection } from "astro:content";
 import Home from "../index.astro";
 import About from "../about.astro";
 import Photography from "../photography.astro";
+import Life from "../life.astro";
+import Island from "../island.astro";
 import Archives from "../archives/index.astro";
 import Search from "../search.astro";
 import Tags from "../tags/index.astro";
@@ -25,9 +27,16 @@ export const getStaticPaths = (async ({ paginate }) => {
     props: Record<string, unknown>;
   }[] = [
     { params: { page: undefined }, props: { kind: "home" } },
-    ...["about", "photography", "archives", "search", "tags", "404"].map(
-      path => ({ params: { page: path }, props: { kind: path } })
-    ),
+    ...[
+      "about",
+      "photography",
+      "life",
+      "island",
+      "archives",
+      "search",
+      "tags",
+      "404",
+    ].map(path => ({ params: { page: path }, props: { kind: path } })),
   ];
   const posts = getSortedPosts(await getCollection("posts"));
   const pageUrls = (
@@ -103,6 +112,8 @@ const views = {
   home: Home,
   about: About,
   photography: Photography,
+  life: Life,
+  island: Island,
   archives: Archives,
   search: Search,
   tags: Tags,

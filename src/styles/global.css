@@ -5,6 +5,7 @@
 @import "./site.css";
 @import "./xiaohei.css";
 @import "./refinements.css";
+@import "./daily.css";
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 

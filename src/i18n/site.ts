@@ -1,5 +1,40 @@
 // Shared copy for the personal pages and their browser interactions.
 const english: Record<string, string> = {
+  "很高兴，你把今天的一点时间留在这里。":
+    "I'm glad a little of your day brought you here.",
+  收起问候: "Dismiss greeting",
+  页面请求记录: "Page requests",
+  "包括机器人访问，不代表独立访客":
+    "Includes bots; this is not a unique visitor count",
+  日常: "Life",
+  风光: "Landscapes",
+  聆: "Listening",
+  音乐: "Music",
+  "聆 · 音乐": "Listening · Music",
+  "日常 · 知行博客": "Life · Zhixing Journal",
+  "几首歌，一点生活，偶尔停下来。":
+    "A few songs, little moments, and room to pause.",
+  "把喜欢的声音，留在身边。": "Keep a little space for the sounds you love.",
+  "先记下喜欢的名字，专辑与感想慢慢补上。":
+    "Favorite names first. Albums and listening notes will follow.",
+  "去听听 ↗": "Listen elsewhere ↗",
+  "前往日常 ↗": "Explore daily life ↗",
+  碎碎念: "Little notes",
+  "小小的事，也值得记下来。": "Little things are worth keeping, too.",
+  "今天的碎碎念，还在口袋里。": "Today's little notes are still in a pocket.",
+  游玩中: "Playing",
+  轻轻碰一下鼠鼠: "Say hello to the little mouse",
+  "鼠鼠把一粒小种子留给了你。": "The mouse has left you a little seed.",
+  再给它一粒种子: "Offer another seed",
+  "三粒种子，换一座小岛。": "Three seeds, and a little island.",
+  "去孤岛坐坐 ↗": "Visit the little island ↗",
+  孤岛: "A little island",
+  "孤岛 · 知行博客": "A little island · Zhixing Journal",
+  "这里没有催促。": "There is no hurry here.",
+  "把声音放轻，把今天放下。": "Let the sounds soften. Let the day settle.",
+  "岛上的信，还没有送来。": "The first note hasn't washed ashore yet.",
+  "回到岸边 ↗": "Back to the shore ↗",
+  拾一粒小石子: "Pick up a little pebble",
   知行博客: "Zhixing Journal",
   "记录生活中的片刻，分享日常的感受与思考。":
     "Small moments, everyday feelings, and thoughts worth keeping.",

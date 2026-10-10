@@ -14,6 +14,7 @@ type Props = {
   description?: string;
   ogImage?: string;
   canonicalURL?: string;
+  noIndex?: boolean;
 };
 
 const { site } = config;
@@ -35,6 +36,7 @@ const {
   description = s(site.description),
   ogImage = resolveDefaultOgImagePath(config),
   canonicalURL = new URL(Astro.url.pathname, Astro.site).href,
+  noIndex = logicalPath.startsWith("404"),
 } = Astro.props;
 
 const socialImageURL = new URL(ogImage, Astro.site ?? Astro.url);
@@ -56,25 +58,25 @@ const rssHref = getRelativeLocaleUrl(
     <link
       rel="icon"
       type="image/x-icon"
-      href={`${getAssetPath("favicon.ico")}?v=xiaohei-3`}
+      href={`${getAssetPath("favicon.ico")}?v=xiaohei-4`}
     />
     <link
       rel="icon"
       type="image/png"
       sizes="128x128"
-      href={`${getAssetPath("favicon.png")}?v=xiaohei-3`}
+      href={`${getAssetPath("favicon.png")}?v=xiaohei-4`}
     />
     <link
       rel="icon"
       type="image/svg+xml"
       sizes="any"
-      href={`${getAssetPath("favicon.svg")}?v=xiaohei-3`}
+      href={`${getAssetPath("favicon.svg")}?v=xiaohei-4`}
     />
     <link rel="canonical" href={canonicalURL} />
     <link
       rel="apple-touch-icon"
       sizes="180x180"
-      href={`${getAssetPath("apple-touch-icon.png")}?v=xiaohei-3`}
+      href={`${getAssetPath("apple-touch-icon.png")}?v=xiaohei-4`}
     />
     <link
       rel="alternate"
@@ -98,6 +100,7 @@ const rssHref = getRelativeLocaleUrl(
     <meta name="title" content={title} />
     <meta name="description" content={description} />
     <meta name="author" content={site.author} />
+    {noIndex && <meta name="robots" content="noindex,nofollow" />}
     <link rel="sitemap" href={getAssetPath("sitemap-index.xml")} />
 
     <!-- Open Graph -->
@@ -170,6 +173,7 @@ const rssHref = getRelativeLocaleUrl(
     <ClientRouter />
   </head>
   <body
+    data-pagefind-ignore={noIndex ? "all" : undefined}
     class="bg-background font-app text-foreground selection:bg-accent/75 selection:text-accent-foreground flex min-h-svh flex-col"
   >
     <slot />

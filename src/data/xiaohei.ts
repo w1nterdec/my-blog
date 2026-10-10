@@ -1,5 +1,7 @@
 export type XiaoheiTopic =
   | "home"
+  | "music"
+  | "island"
   | "photos"
   | "pets"
   | "portraits"
@@ -20,6 +22,21 @@ export const xiaoheiWords: Record<
   XiaoheiTopic,
   { label: string; lines: string[] }
 > = {
+  music: {
+    label: "聆 · 声音的片刻",
+    lines: [
+      "歌不必在这里响起。记得喜欢，就很好。",
+      "鼠鼠在唱片旁边藏了一点小惊喜。",
+      "听过的声音，也会成为日子的坐标。",
+    ],
+  },
+  island: {
+    label: "孤岛 · 慢慢呼吸",
+    lines: [
+      "这里没有待办。先把肩膀放松吧。",
+      "我和鼠鼠都在。你可以安静一会儿。",
+    ],
+  },
   home: {
     label: "知行之间",
     lines: [
@@ -132,6 +149,21 @@ export const cityWords: Record<string, string> = {
 };
 
 const englishWords: typeof xiaoheiWords = {
+  music: {
+    label: "Listening, quietly",
+    lines: [
+      "The music doesn't have to play here. Remembering it is lovely too.",
+      "The mouse has tucked a little surprise beside the records.",
+      "A sound can become a little landmark in a day.",
+    ],
+  },
+  island: {
+    label: "A place to breathe",
+    lines: [
+      "No to-do list here. Let your shoulders settle.",
+      "The mouse and I are here. Take a quiet moment.",
+    ],
+  },
   home: {
     label: "Between knowing and doing",
     lines: [

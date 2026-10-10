@@ -3,6 +3,8 @@ import type { HTMLAttributes } from "astro/types";
 import Socials from "./Socials.astro";
 import Xiaohei from "./Xiaohei.astro";
 import { useTranslations } from "@/i18n";
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { localize } from "@/i18n/site";
 
 type Props = {
   noMarginTop?: boolean;
@@ -12,6 +14,7 @@ const { noMarginTop = false, class: className, ...attrs } = Astro.props;
 
 const t = useTranslations(Astro.currentLocale);
 const currentYear = new Date().getFullYear();
+const s = localize(Astro.currentLocale);
 ---
 
 <footer
@@ -23,6 +26,16 @@ const currentYear = new Date().getFullYear();
   {...attrs}
 >
   <Xiaohei mode="garden" />
+  <p class="site-request-count" data-request-count hidden data-pagefind-ignore>
+    {s("页面请求记录")} · <span data-request-total></span><span class="sr-only"
+      >{s("包括机器人访问，不代表独立访客")}</span>
+  </p>
+  <a
+    class="island-pebble"
+    href={getRelativeLocaleUrl(Astro.currentLocale ?? "zh-CN", "island")}
+    aria-label={s("拾一粒小石子")}
+    title={s("拾一粒小石子")}>◦</a
+  >
   <div
     class="border-border flex flex-col items-center justify-between border-t py-6 sm:flex-row-reverse sm:py-4"
   >
@@ -34,3 +47,6 @@ const currentYear = new Date().getFullYear();
     </div>
   </div>
 </footer>
+<script>
+  import "@/scripts/stats";
+</script>

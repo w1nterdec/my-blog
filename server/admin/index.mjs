@@ -1,5 +1,7 @@
 import { createServer } from 'node:http';
 import { randomBytes, timingSafeEqual } from 'node:crypto';
+import { resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
 export function createAdminServer(config = process.env, fetcher = fetch) {
   const origin = new URL(config.ADMIN_ORIGIN ?? 'https://chenzhixing.bbroot.com').origin;
   const owner = config.ADMIN_GITHUB_USER ?? 'w1nterdec';
@@ -59,7 +61,7 @@ export function createAdminServer(config = process.env, fetcher = fetch) {
     } catch { reply(502,'认证服务暂时不可用，请稍后重试。'); }
   });
 }
-if (process.argv[1]?.replace(/\\/g,'/').endsWith('/server/admin/index.mjs')) {
+if (process.argv[1] && pathToFileURL(resolve(process.argv[1])).href === import.meta.url) {
   const server = createAdminServer();
   server.requestTimeout=20000; server.headersTimeout=15000;
   server.listen(Number(process.env.ADMIN_PORT ?? 4322),'127.0.0.1');
