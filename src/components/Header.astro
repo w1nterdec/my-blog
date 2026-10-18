@@ -9,14 +9,11 @@ const s = localize(locale);
 const path = stripLocale(stripBase(Astro.url.pathname), locale);
 const links = [
   { label: "首页", route: "" },
-  { label: "随笔", route: "posts" },
-  { label: "摄影", route: "photography" },
-  { label: "日常", route: "life" },
-  { label: "关于", route: "about" },
+  { label: "项目", route: "projects" },
   ...(config.features.showArchives
     ? [{ label: "归档", route: "archives" }]
     : []),
-  ...(config.features.search ? [{ label: "搜索", route: "search" }] : []),
+  { label: "关于", route: "about" },
 ];
 ---
 
@@ -24,9 +21,7 @@ const links = [
 <header class="site-header" data-site-header>
   <div class="wide-layout header-inner">
     <a class="site-brand" href={getRelativeLocaleUrl(locale, "")}>
-      <span class="brand-mark" aria-hidden="true">知</span>
-      <span>{s(config.site.title)}<small>{s("记录 · 生活 · 探索")}</small></span
-      >
+      {config.site.author}
     </a>
     <nav class="site-nav" id="site-nav" aria-label={s("主导航")}>
       {
@@ -34,7 +29,13 @@ const links = [
           <a
             href={getRelativeLocaleUrl(locale, link.route)}
             aria-current={
-              (link.route ? path.startsWith("/" + link.route) : path === "/")
+              (
+                link.route
+                  ? path.startsWith("/" + link.route)
+                  : path === "/" ||
+                    path.startsWith("/posts") ||
+                    path.startsWith("/tags")
+              )
                 ? "page"
                 : undefined
             }
@@ -45,6 +46,36 @@ const links = [
       }
     </nav>
     <div class="header-tools">
+      {
+        config.features.search && (
+          <a
+            class="header-tool"
+            href={getRelativeLocaleUrl(locale, "search")}
+            aria-label={s("搜索")}
+            aria-current={path.startsWith("/search") ? "page" : undefined}
+          >
+            <svg
+              width="17"
+              height="17"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              aria-hidden="true"
+            >
+              <>
+                <circle cx="10.5" cy="10.5" r="6.5" />
+                <path d="m16 16 4 4" />
+              </>
+            </svg>
+          </a>
+        )
+      }
+      <a
+        class="header-tool rss-tool"
+        href={getRelativeLocaleUrl(locale, "rss.xml").replace(/\/$/, "")}
+        aria-label={s("订阅 RSS")}>RSS</a
+      >
       <details class="language-picker" data-language-picker>
         <summary aria-label={s("选择语言")}
           ><span aria-hidden="true">◎</span>
@@ -81,22 +112,6 @@ const links = [
           }
         </div>
       </details>
-      {
-        config.features.lightAndDarkMode && (
-          <label class="theme-control">
-            <>
-              <span aria-hidden="true">◐</span>
-              <select id="theme-select" aria-label={s("显示主题")}>
-                <>
-                  <option value="system">{s("跟随系统")}</option>
-                  <option value="light">{s("浅色")}</option>
-                  <option value="dark">{s("深色")}</option>
-                </>
-              </select>
-            </>
-          </label>
-        )
-      }
       <button
         type="button"
         id="menu-btn"
@@ -106,7 +121,7 @@ const links = [
         aria-controls="site-nav"><span aria-hidden="true">☰</span></button
       >
     </div>
-    <div class="header-rail" data-xiaohei-rail><Xiaohei mode="header" /></div>
+    <div class="header-rail" data-xiaohei-rail><Xiaohei /></div>
   </div>
 </header>
 <script>

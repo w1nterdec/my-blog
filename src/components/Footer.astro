@@ -1,20 +1,18 @@
 ---
 import type { HTMLAttributes } from "astro/types";
 import Socials from "./Socials.astro";
-import Xiaohei from "./Xiaohei.astro";
 import { useTranslations } from "@/i18n";
-import { getRelativeLocaleUrl } from "astro:i18n";
 import { localize } from "@/i18n/site";
-
-type Props = {
-  noMarginTop?: boolean;
-} & HTMLAttributes<"footer">;
-
+import config from "@/config";
+import { getRunningDays } from "@/utils/getRunningDays";
+type Props = { noMarginTop?: boolean } & HTMLAttributes<"footer">;
 const { noMarginTop = false, class: className, ...attrs } = Astro.props;
-
 const t = useTranslations(Astro.currentLocale);
-const currentYear = new Date().getFullYear();
 const s = localize(Astro.currentLocale);
+const locale = Astro.currentLocale ?? config.site.lang;
+const runningDays = config.site.startedAt
+  ? getRunningDays(config.site.startedAt, new Date(), config.site.timezone)
+  : null;
 ---
 
 <footer
@@ -25,38 +23,37 @@ const s = localize(Astro.currentLocale);
   ]}
   {...attrs}
 >
-  <Xiaohei mode="garden" />
-  <p class="site-request-count" data-request-count hidden data-pagefind-ignore>
-    {s("页面请求记录")} · <span data-request-total></span><span class="sr-only"
-      >{s("包括机器人访问，不代表独立访客")}</span
-    >
-  </p>
-  <a
-    class="island-pebble"
-    data-hamster-pebble
-    href={getRelativeLocaleUrl(Astro.currentLocale ?? "zh-CN", "island")}
-    aria-label={s("拾一粒小石子")}
-    title={s("拾一粒小石子")}
-    ><svg viewBox="0 0 30 24" width="22" height="18" aria-hidden="true"
-      ><path d="m4 10 6-6 10 1 7 8-4 7H7l-4-5Z" fill="currentColor"></path><path
-        d="m10 8 9 1 3 5-10 2-4-4Z"
-        fill="none"
-        stroke="var(--surface)"
-        stroke-width="1"
-        opacity=".6"></path></svg
-    ></a
-  >
-  <div
-    class="border-border flex flex-col items-center justify-between border-t py-6 sm:flex-row-reverse sm:py-4"
-  >
-    <Socials />
-    <div class="my-2 flex flex-col items-center whitespace-nowrap sm:flex-row">
-      <span>{t.footer.copyright} &#169; {currentYear}</span>
-      <span class="hidden sm:inline">&nbsp;|&nbsp;</span>
-      <span>{t.footer.allRightsReserved}</span>
+  <div class="footer-row">
+    <div class="footer-copy">
+      {
+        runningDays !== null && (
+          <p
+            class="site-uptime"
+            data-site-uptime
+            data-started-at={config.site.startedAt}
+            data-timezone={config.site.timezone}
+            title={`${s("运行起始日期")}：${config.site.startedAt}`}
+            data-pagefind-ignore
+          >
+            {s("已运行")}{" "}
+            <span data-running-days>{runningDays.toLocaleString(locale)}</span>{" "}
+            {s("天")}
+          </p>
+        )
+      }
+      <p>
+        {`© ${new Date().getFullYear()} ${config.site.author}`}
+        <span class="footer-rights">{t.footer.allRightsReserved}</span>
+      </p>
     </div>
+    <Socials />
   </div>
+  <p class="site-request-count" data-request-count hidden data-pagefind-ignore>
+    {s("页面请求记录")} · <span data-request-total></span>
+    <span class="sr-only">{s("包括机器人访问，不代表独立访客")}</span>
+  </p>
 </footer>
 <script>
   import "@/scripts/stats";
+  import "@/scripts/uptime";
 </script>

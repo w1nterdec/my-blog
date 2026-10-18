@@ -1,0 +1,69 @@
+---
+import { render } from "astro:content";
+import { getRelativeLocaleUrl } from "astro:i18n";
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import { getProjects, type ProjectDocument } from "@/utils/getProjects";
+import { localize } from "@/i18n/site";
+import config from "@/config";
+
+export async function getStaticPaths() {
+  return (await getProjects()).map(project => ({
+    params: { slug: project.slug },
+    props: { project },
+  }));
+}
+interface Props {
+  project: ProjectDocument;
+}
+const { project } = Astro.props;
+const s = localize(Astro.currentLocale);
+const { Content } = await render(project);
+const firstHeading = project.body
+  ?.trimStart()
+  .match(/^#\s+(.+?)\s*#*\s*(?:\n|$)/)?.[1];
+---
+
+<Layout
+  title={`${project.data.title} | ${s(config.site.title)}`}
+  description={project.data.description}
+  ogImage={project.data.ogImage}
+>
+  <Header />
+  <main
+    id="main-content"
+    class="wide-layout project-document"
+    data-pagefind-body
+  >
+    <a
+      class="text-link"
+      href={getRelativeLocaleUrl(
+        Astro.currentLocale ?? config.site.lang,
+        "projects"
+      )}>← {s("返回项目")}</a
+    >
+    <header class="project-document-header">
+      <h1>{project.data.title}</h1>
+      {
+        project.data.pubDatetime && (
+          <time datetime={project.data.pubDatetime.toISOString()}>
+            {new Intl.DateTimeFormat(Astro.currentLocale ?? config.site.lang, {
+              dateStyle: "long",
+              timeZone: config.site.timezone,
+            }).format(project.data.pubDatetime)}
+          </time>
+        )
+      }
+    </header>
+    <article
+      class:list={[
+        "app-prose project-content",
+        { "has-document-title": firstHeading === project.data.title },
+      ]}
+    >
+      <Content />
+    </article>
+  </main>
+  <Footer />
+</Layout>

@@ -1,93 +1,53 @@
 ---
 import { localize } from "@/i18n/site";
-const s = localize(Astro.currentLocale);
 import { places } from "@/data/personal";
 import { getAssetPath } from "@/utils/withBase";
+import "@/styles/globe.css";
+const s = localize(Astro.currentLocale);
 ---
 
 <section
   id="footprints"
-  class="travel-section reveal"
+  class="travel-section"
   aria-labelledby="footprints-title"
   data-globe
   data-world-url={getAssetPath("maps/world.json")}
   data-places={JSON.stringify(
-    places.map(place => ({
-      ...place,
-      name: s(place.name),
-      residence: place.residence ? s(place.residence) : undefined,
-      description: s(place.description),
+    places.map(({ coordinates }) => ({
+      coordinates,
     }))
   )}
 >
-  <div class="section-heading">
-    <div>
-      <span class="eyebrow">{s("PLACES / 留在地图上的记忆")}</span><h2
-        id="footprints-title"
-      >
-        {s("走过的地方")}
-      </h2>
-    </div><span class="pill">{s("中国 · 5 座城市")}</span>
-  </div>
-  <div class="globe-layout surface">
-    <div class="globe-stage">
-      <div class="globe-coordinate" aria-hidden="true">
-        30.59° N / 114.30° E
-      </div>
-      <canvas
-        class="travel-globe"
-        tabindex="0"
-        role="img"
-        aria-label={s(
-          "可旋转的城市地球仪。使用左右上下方向键旋转，加减键缩放，也可使用旁边的城市按钮。"
-        )}></canvas>
-      <p class="globe-loading">{s("地球正在展开…")}</p>
-      <div class="globe-controls">
-        <button type="button" data-globe-play aria-pressed="true"
-          >{s("暂停旋转")}</button
-        ><button type="button" data-globe-reset>{s("回到中国")}</button><button
-          type="button"
-          data-globe-touch
-          aria-pressed="false">{s("自由拖动")}</button
-        >
-      </div>
-      <p class="globe-hint">{s("横向拖动旋转 · 点选城市，靠近一段记忆")}</p>
-    </div>
-    <div class="globe-info">
-      <div class="globe-legend">
-        <span><i class="residence-dot"></i>{s("居住")}</span><span
-          ><i class="travel-dot"></i>{s("旅行")}</span
-        >
-      </div>
-      <div class="city-buttons" role="group" aria-label={s("选择足迹城市")}>
-        {
-          places.map((place, index) => (
-            <button
-              type="button"
-              data-city-index={index}
-              aria-pressed={index === 0}
-            >
+  <h2 id="footprints-title" class="footprints-heading">{s("足迹")}</h2>
+  <div class="globe-stage">
+    <canvas
+      class="travel-globe"
+      tabindex="0"
+      role="img"
+      aria-label={s(
+        "足迹地球仪。拖动或使用方向键旋转，加减键缩放，点击标记查看地点。"
+      )}></canvas>
+    <div class="globe-markers">
+      {
+        places.map((place, index) => (
+          <button
+            type="button"
+            class:list={["globe-marker", { "is-residence": place.residence }]}
+            data-globe-marker={index}
+            aria-label={s(place.name)}
+            aria-pressed="false"
+            hidden
+          >
+            <span class="globe-marker-dot" aria-hidden="true" />
+            <span class="globe-marker-label" aria-hidden="true">
               {s(place.name)}
-              {place.residence && <small>{s(place.residence)}</small>}
-            </button>
-          ))
-        }
-      </div>
-      <div class="city-story" aria-live="polite">
-        <span class="eyebrow">{s("中国 / CHINA")}</span><h3 data-city-name>
-          {s("武汉")}
-        </h3><p data-city-kinds>{s("现居 · 旅行")}</p><p data-city-description>
-          {s(places[0].description)}
-        </p>
-      </div>
-      <p class="globe-note">{s("每座城市的故事，留待慢慢补上。")}</p>
+            </span>
+          </button>
+        ))
+      }
     </div>
+    <p class="globe-loading" role="status">{s("地球正在展开…")}</p>
   </div>
-  <noscript
-    ><p>
-      {s("武汉：现居、旅行；成都：曾居、旅行；洛阳、合肥、安阳：旅行足迹。")}
-    </p></noscript
-  >
 </section>
 <script>
   import { initGlobes } from "@/scripts/globe";

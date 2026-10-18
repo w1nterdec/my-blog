@@ -1,0 +1,39 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import { getProjects, getProjectUrl } from "@/utils/getProjects";
+import { localize } from "@/i18n/site";
+import config from "@/config";
+const s = localize(Astro.currentLocale);
+const projects = await getProjects();
+---
+
+<Layout
+  title={`${s("项目")} | ${s(config.site.title)}`}
+  description={s("个人项目与开源实践。")}
+>
+  <Header />
+  <main id="main-content" class="wide-layout projects-page">
+    <h1>{s("项目")}</h1>
+    {
+      projects.length > 0 ? (
+        <ul class="project-list">
+          {projects.map(project => (
+            <li class="project-entry">
+              <h2>
+                <a href={getProjectUrl(project.slug, Astro.currentLocale)}>
+                  {project.data.title}
+                </a>
+              </h2>
+              {project.data.description && <p>{project.data.description}</p>}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="projects-empty">{s("项目正在整理中。")}</p>
+      )
+    }
+  </main>
+  <Footer />
+</Layout>

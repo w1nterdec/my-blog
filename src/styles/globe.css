@@ -1,0 +1,94 @@
+.travel-section {
+  margin-top: 48px;
+  scroll-margin-top: 120px;
+}
+.footprints-heading {
+  margin-bottom: 12px;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.globe-stage {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  margin-inline: auto;
+  background: #fff;
+}
+.globe-markers {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.globe-marker {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  pointer-events: auto;
+  border-radius: 50%;
+  color: var(--travel);
+}
+.globe-marker.is-residence {
+  color: var(--accent);
+}
+.globe-marker-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.globe-marker:hover,
+.globe-marker:focus-visible,
+.globe-marker[aria-pressed="true"] {
+  z-index: 1;
+}
+.globe-marker[aria-pressed="true"] .globe-marker-dot {
+  outline: 1px solid currentColor;
+  outline-offset: 4px;
+}
+.globe-marker-label {
+  display: none;
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  transform: translateX(-50%);
+  padding: 3px 9px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: #fff;
+  color: var(--heading);
+  font-size: 12px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.globe-marker[aria-pressed="true"] .globe-marker-label,
+.globe-marker:hover .globe-marker-label,
+.globe-marker:focus-visible .globe-marker-label {
+  display: block;
+}
+.travel-globe {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  cursor: grab;
+  touch-action: none;
+}
+.travel-globe:active {
+  cursor: grabbing;
+}
+.travel-globe:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 50%;
+}
+.globe-loading {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  text-align: center;
+  font-size: 12px;
+  pointer-events: none;
+}

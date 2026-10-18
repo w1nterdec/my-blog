@@ -6,8 +6,6 @@ import { getAssetPath } from "@/utils/withBase";
 import config from "@/config";
 import { localize } from "@/i18n/site";
 import { stripBase, stripLocale } from "@/utils/withBase";
-import Xiaohei from "@/components/Xiaohei.astro";
-import Hamster from "@/components/Hamster.astro";
 import "@/styles/global.css";
 
 type Props = {
@@ -51,6 +49,7 @@ const rssHref = getRelativeLocaleUrl(
 <html
   dir={site.dir ?? "ltr"}
   lang={Astro.currentLocale ?? site.lang}
+  data-theme="light"
   class="overflow-y-scroll scroll-smooth"
 >
   <head>
@@ -59,25 +58,25 @@ const rssHref = getRelativeLocaleUrl(
     <link
       rel="icon"
       type="image/x-icon"
-      href={`${getAssetPath("favicon.ico")}?v=xiaohei-4`}
+      href={`${getAssetPath("favicon.ico")}?v=github-avatar-1`}
     />
     <link
       rel="icon"
       type="image/png"
       sizes="128x128"
-      href={`${getAssetPath("favicon.png")}?v=xiaohei-4`}
+      href={`${getAssetPath("favicon.png")}?v=github-avatar-1`}
     />
     <link
       rel="icon"
       type="image/svg+xml"
       sizes="any"
-      href={`${getAssetPath("favicon.svg")}?v=xiaohei-4`}
+      href={`${getAssetPath("favicon.svg")}?v=github-avatar-1`}
     />
     <link rel="canonical" href={canonicalURL} />
     <link
       rel="apple-touch-icon"
       sizes="180x180"
-      href={`${getAssetPath("apple-touch-icon.png")}?v=xiaohei-4`}
+      href={`${getAssetPath("apple-touch-icon.png")}?v=github-avatar-1`}
     />
     <link
       rel="alternate"
@@ -128,8 +127,8 @@ const rssHref = getRelativeLocaleUrl(
       href={new URL(rssHref, Astro.site)}
     />
 
-    <!-- Filled at runtime by theme.ts to match the current background colour -->
-    <meta name="theme-color" content="" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="color-scheme" content="light" />
 
     <!-- Extra head content injected by child layouts (e.g. JSON-LD, article meta) -->
     <slot name="head" />
@@ -143,34 +142,6 @@ const rssHref = getRelativeLocaleUrl(
       )
     }
 
-    <!--
-      Inline FOUC-prevention script: sets data-theme on <html> before
-      the browser paints. Runs synchronously, no defer/async.
-    -->
-    <script is:inline>
-      (function () {
-        let stored;
-        try {
-          stored = localStorage.getItem("theme");
-        } catch {}
-        const prefersDark = window.matchMedia(
-          "(prefers-color-scheme: dark)"
-        ).matches;
-        const theme =
-          stored === "light" || stored === "dark"
-            ? stored
-            : prefersDark
-              ? "dark"
-              : "light";
-        const root = document.firstElementChild;
-        root?.setAttribute("data-theme", theme);
-        root?.classList.toggle("dark", theme === "dark");
-        document.documentElement.style.colorScheme = theme;
-        // Expose value so theme.ts can skip re-detection.
-        window.__theme = { value: theme };
-      })();
-    </script>
-
     <ClientRouter />
   </head>
   <body
@@ -178,12 +149,5 @@ const rssHref = getRelativeLocaleUrl(
     class="bg-background font-app text-foreground selection:bg-accent/75 selection:text-accent-foreground flex min-h-svh flex-col"
   >
     <slot />
-    <Xiaohei mode="companion" />
-    <Hamster />
-    <script>
-      import "@/scripts/theme";
-      import "@/scripts/motion";
-      import "@/scripts/xiaohei";
-    </script>
   </body>
 </html>

@@ -1,6 +1,5 @@
 import { defineConfig, envField, svgoOptimizer } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
-import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import { unified } from "@astrojs/markdown-remark";
 import remarkToc from "remark-toc";
@@ -17,10 +16,9 @@ import config from "./astro-paper.config";
 export default defineConfig({
   site: config.site.url,
   integrations: [
-    mdx(),
     sitemap({
       filter: page =>
-        !/\/(?:404(?:\.html)?|admin|island|search)\/?$/.test(page) &&
+        !/\/(?:404(?:\.html)?|admin|search)\/?$/.test(page) &&
         (config.features?.showArchives !== false ||
           !page.endsWith("/archives/")),
     }),
@@ -44,8 +42,7 @@ export default defineConfig({
       rehypePlugins: [rehypeCallouts],
     }),
     shikiConfig: {
-      themes: { light: "min-light", dark: "night-owl" },
-      defaultColor: false,
+      theme: "solarized-light",
       wrap: false,
       transformers: [
         transformerFileName({ style: "v2", hideDot: false }),

@@ -5,7 +5,7 @@ import { getPostUrl } from "@/utils/getPostPaths";
 import config from "@/config";
 export async function GET() {
   return rss({
-    title: "Zhixing Journal",
+    title: config.site.title,
     description:
       "Small moments, everyday feelings, and thoughts worth keeping.",
     site: config.site.url,

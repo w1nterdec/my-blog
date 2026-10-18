@@ -4,9 +4,9 @@ import type { ComponentProps } from "astro/types";
 import { getCollection } from "astro:content";
 import Home from "../index.astro";
 import About from "../about.astro";
-import Photography from "../photography.astro";
-import Life from "../life.astro";
-import Island from "../island.astro";
+import Projects from "../projects.astro";
+import ProjectDocument from "../projects/[...slug].astro";
+import { getProjects } from "@/utils/getProjects";
 import Archives from "../archives/index.astro";
 import Search from "../search.astro";
 import Tags from "../tags/index.astro";
@@ -27,18 +27,18 @@ export const getStaticPaths = (async ({ paginate }) => {
     props: Record<string, unknown>;
   }[] = [
     { params: { page: undefined }, props: { kind: "home" } },
-    ...[
-      "about",
-      "photography",
-      "life",
-      "island",
-      "archives",
-      "search",
-      "tags",
-      "404",
-    ].map(path => ({ params: { page: path }, props: { kind: path } })),
+    ...["about", "projects", "archives", "search", "tags", "404"].map(path => ({
+      params: { page: path },
+      props: { kind: path },
+    })),
   ];
   const posts = getSortedPosts(await getCollection("posts"));
+  for (const project of await getProjects()) {
+    routes.push({
+      params: { page: `projects/${project.slug}` },
+      props: { kind: "projectDocument", project },
+    });
+  }
   const pageUrls = (
     page: { currentPage: number; lastPage: number },
     prefix: string
@@ -111,9 +111,8 @@ export const getStaticPaths = (async ({ paginate }) => {
 const views = {
   home: Home,
   about: About,
-  photography: Photography,
-  life: Life,
-  island: Island,
+  projects: Projects,
+  projectDocument: ProjectDocument,
   archives: Archives,
   search: Search,
   tags: Tags,
@@ -125,7 +124,8 @@ const views = {
 const { kind } = Astro.props;
 // getStaticPaths supplies the matching view's required props for every route.
 const props = Astro.props as ComponentProps<typeof Posts> &
-  ComponentProps<typeof Article> & { tagName: string };
+  ComponentProps<typeof Article> &
+  ComponentProps<typeof ProjectDocument> & { tagName: string };
 const View = views[kind as keyof typeof views];
 ---
 

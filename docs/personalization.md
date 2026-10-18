@@ -1,70 +1,33 @@
-# 知行博客：个人小站维护
-
-## 近况、项目与城市
-
-编辑 `src/data/personal.ts`：
-
-- `personal`：头像、签名、现居地、近期状态和项目。
-- `places`：城市名称、经纬度（经度在前）、居住身份、旅行身份和城市故事。未提供的日期不显示。
-- `photos`：摄影作品数据。
-
-首页侧栏与关于页共用这些数据。`public/avatar.webp` 是本轮从公开 GitHub 头像获取的本地版本，不会在访问时请求 GitHub。
-
-## 摄影集「映」
-
-照片放到 `public/photos/`，然后在 `photos` 中添加：
-
-```ts
-{
-  src: "photos/portrait-01.webp",
-  alt: "描述画面内容，供屏幕阅读器使用",
-  title: "照片标题",
-  category: "人像", // 或 "猫犬"
-  location: "武汉", // 可省略
-}
-```
-
-空摄影集显示明确标注的 GitHub 头像临时封面。加入真实作品后，首页取第一张作为封面，接下来最多三张用于预览；摄影页自动显示分类、作品网格和大图浏览。
-
-建议先压缩照片，保留原始比例，不需要修改界面组件。城市与作品说明只填写希望公开的信息。
+# w1nter维护
 
 ## 配色与布局
 
-- `src/styles/theme.css`：浅色、深色、地球仪颜色。
-- `src/styles/site.css`：双栏、侧栏、摄影、地球仪、移动端与动效。
-- 主题菜单提供浅色、深色和跟随系统，手动选择会保存；减少动态效果设置会关闭进入动画和地球仪自动旋转。
-- `public/default-og.svg`：默认分享图的可编辑源文件，实际分享使用 `default-og.jpg`。
-- 地图来源与数据处理说明见 `public/maps/README.md`。
+全站固定使用纯白底色，保留 Solarized Light 的文字、强调色与代码配色，不读取旧主题偏好或系统暗色设置。
 
-## 本地检查
+- src/styles/theme.css：背景、正文、链接、边框与地球仪色值。
+- src/styles/site.css：单栏首页、文章条目、导航、关于页和手机布局。
+- src/styles/globe.css：关于页旅行地图。
+- 首页只显示“我是 w1nter”标题与文章区。导航向下滚动后贴顶收束，仅底部圆角；减少动态效果时关闭收束过渡。
+- astro-paper.config.ts 的 site.startedAt 设置运行起始日期；页脚按站点时区计算天数，从 2026-09-30 起算。
+- src/styles/typography.css：Markdown 正文排版；代码高亮使用 solarized-light。
+- public/admin/admin.css、preview.css：后台外壳与内容预览。
 
-```sh
-npm run lint
-npm run build
-npm run preview
-```
+## 文章、项目文档与个人资料
 
-文章为空时 Astro 会提示空内容集合，属于当前状态。真实照片与首篇文章等待补充。
+后台“文章”维护正文、摘要、日期、标签、精选与草稿状态。
 
-## 罗小黑彩蛋
+后台“项目文档”独立管理私有仓库 projects/ 中的 Markdown，支持导入 README 文件、正文编辑、草稿与发布，详情在站内阅读。旧 personal.project 外链配置已停止展示和导出。
 
-- 导航栏点击小黑：打开互动气泡，可摸摸、开启陪读、减少自动发言。
-- 页底小院：默认漫游，点选空地会走过去；夜间出现星光，行走留下短暂脚印。
-- 在输入框之外连续输入 `xiaohei`，或点击气泡「陪我读一会儿」/小院「叫小黑过来」，可召唤屏幕边缘的小黑。右侧箭头送它回小院。
-- 「少说一点」只关闭自动发言，手动互动仍可使用。陪读和安静偏好保存在当前浏览器本地。
-- 气泡依据页面/可见板块选择内容；陪读时点选城市或摄影分类会给出对应回应。普通自动发言至少间隔 28 秒，每页最多两次。
-- `src/data/xiaohei.ts`：各场景气泡文案与城市回应，集中维护；不调用 AI 或外部接口。
-- `src/scripts/xiaohei-sprite.ts`：本地手绘像素角色与六种动作。
-- `src/scripts/xiaohei.ts`：漫游、互动、偏好、Astro 页面切换清理和动画暂停。
-- `src/components/Xiaohei.astro` / `src/styles/xiaohei.css`：入口、小院、气泡和手机布局。
-- 减少动画设置下角色保持静态，不自动漫游；键盘方向键或点选空地可直接调整位置。后台标签页暂停，照片弹窗/全屏期间收起浮层。
-- 陪读角色会避开底部的链接、按钮与输入控件；空间不足时换一层高度或暂时隐藏，并适配手机可视区域变化。
+后台“个人资料与足迹”沿用私有仓库 settings/journal.json，只维护 personal 与 places。个人资料只保留名字、头像与签名，不再导出项目外链、所在城市和近况状态。旧生活模块字段不再展示或导出；此次源码精简不主动修改私有仓库原始数据。后台保存后是否保留所有未配置字段由 CMS 决定，原始内容应通过私有仓库历史或独立备份恢复。
 
-## 双语与界面细节
+src/data/personal.ts 从生成数据中读取个人资料与城市；无生成文件时读取 journal-default.json。项目文档列表位于 /projects/ 与 /en/projects/，详情为 /projects/<slug>/，所有页面导航均提供入口。关于页右侧条形目录对应“关于我、联系我、足迹”。白底地球仪由访客拖动，不自动旋转；点击足迹标记会聚焦并显示地点名。城市列表为空时不渲染地图与对应目录项。
 
-- 中文保留原有 URL；英文位于 `/en/`，共享页面组件与文章集合。`src/pages/en/[...page].astro` 生成英文首页、分页、标签和文章入口。
-- `src/i18n/site.ts` 维护个性化界面翻译；`src/content/pages/about-en.md` 维护英文介绍；小黑双语气泡在 `src/data/xiaohei.ts`。
-- 切换语言保留对应页面、搜索参数及关于页对应锚点。新增页面时同步检查英文路由和翻译。文章正文暂保留中文原文，英文阅读界面明确说明，不自动生成译文。
-- 导航下滑超过 96px 收束为圆角浮栏，回到顶部附近展开；小黑始终沿栏内分段线活动。头部和小院角色有独立行为与动画相位。
-- `src/styles/refinements.css` 维护导航收束、按钮与分工字体；Inter 用于界面与英文正文，中文正文使用系统无衬线字体，展示标题使用衬线，代码使用 JetBrains Mono。字体在 `public/fonts/` 本地托管，许可文件一并保留。
-- favicon 使用小黑头像，SVG、PNG、ICO 与 Apple touch icon 同步更新；布局中的版本参数用于刷新浏览器图标缓存。
+关于页正文在 src/content/pages/about.md 和 about-en.md 中维护；致谢在 credits.md 和 credits-en.md 中维护，固定放在关于页最下方。英文界面翻译在 src/i18n/site.ts，文章正文不自动翻译。
+
+## 导航栏小黑
+
+src/components/Xiaohei.astro、src/scripts/xiaohei.ts、xiaohei-sprite.ts 与 src/styles/xiaohei.css 仅维护导航栏小黑的待机与行走。不提供气泡、陪读或快捷召唤。页面隐藏或角色离屏时暂停；减少动态效果设置下静态展示。
+
+## 验证
+
+修改后运行 npm run lint、node --test tests/*.test.mjs 和 npm run build。检查中英文、手机菜单、语言切换、文章图片放大、地球仪拖动及静止行为、项目文档导入与详情以及旧页面 404。不要为展示效果生成虚假文章。

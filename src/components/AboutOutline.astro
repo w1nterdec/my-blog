@@ -1,0 +1,103 @@
+---
+import { localize } from "@/i18n/site";
+interface Props {
+  entries: { slug: string; text: string }[];
+}
+const { entries } = Astro.props;
+const s = localize(Astro.currentLocale);
+---
+
+<nav class="about-outline" aria-label={s("本页目录")} data-about-outline>
+  {
+    entries.map((entry, index) => (
+      <a
+        href={`#${entry.slug}`}
+        aria-label={entry.text}
+        aria-current={index === 0 ? "location" : undefined}
+      >
+        <span class="about-outline-label" aria-hidden="true">
+          {entry.text}
+        </span>
+        <span class="about-outline-bar" aria-hidden="true" />
+      </a>
+    ))
+  }
+</nav>
+
+<style>
+  .about-outline {
+    position: fixed;
+    top: 240px;
+    right: max(24px, calc((100vw - 840px) / 2));
+    z-index: 20;
+    display: grid;
+  }
+  .about-outline a {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: 44px;
+    height: 32px;
+  }
+  .about-outline-bar {
+    width: 18px;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--border);
+    transition:
+      width 160ms ease,
+      background 160ms ease;
+  }
+  a[aria-current] .about-outline-bar {
+    width: 28px;
+    background: var(--accent);
+  }
+  a:hover .about-outline-bar,
+  a:focus-visible .about-outline-bar {
+    background: var(--accent);
+  }
+  .about-outline-label {
+    position: absolute;
+    right: calc(100% + 8px);
+    padding: 3px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--background);
+    color: var(--heading);
+    white-space: nowrap;
+    font-size: 12px;
+    opacity: 0;
+    pointer-events: none;
+  }
+  a:hover .about-outline-label,
+  a:focus-visible .about-outline-label {
+    opacity: 1;
+  }
+  @media (max-width: 600px) {
+    .about-outline {
+      right: 4px;
+      top: 210px;
+    }
+    .about-outline a {
+      width: 24px;
+      height: 36px;
+    }
+    .about-outline-bar {
+      width: 10px;
+    }
+    a[aria-current] .about-outline-bar {
+      width: 16px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .about-outline-bar {
+      transition: none;
+    }
+  }
+</style>
+<script>
+  import { initAboutOutline } from "@/scripts/about-outline";
+  initAboutOutline();
+  document.addEventListener("astro:page-load", initAboutOutline);
+</script>

@@ -3,13 +3,14 @@ import { defineAstroPaperConfig } from "./src/types/config";
 export default defineAstroPaperConfig({
   site: {
     url: "https://chenzhixing.bbroot.com/",
-    title: "知行博客",
+    title: "w1nter",
     description: "记录生活中的片刻，分享日常的感受与思考。",
     author: "w1nter",
     profile: "https://chenzhixing.bbroot.com/about/",
-    ogImage: "default-og.jpg",
+    ogImage: "github-avatar.png",
     lang: "zh-CN",
     timezone: "Asia/Shanghai",
+    startedAt: "2026-09-30",
     dir: "ltr",
   },
   posts: {
@@ -18,7 +19,6 @@ export default defineAstroPaperConfig({
     scheduledPostMargin: 0,
   },
   features: {
-    lightAndDarkMode: true,
     dynamicOgImage: false,
     showArchives: true,
     showBackButton: true,

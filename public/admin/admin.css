@@ -1,7 +1,33 @@
-body {
+:root {
+  color-scheme: only light;
+}
+html body {
   margin: 0;
-  background: #f8f7f3;
+  background: #ffffff;
+  color: #657b83;
   font-family: system-ui, "Microsoft YaHei", sans-serif;
+}
+#nc-root [class*="StyledAuthenticationPage"] {
+  min-height: calc(100vh - 52px);
+  padding: 40px 20px;
+  box-sizing: border-box;
+}
+#nc-root [class*="CustomIconWrapper"] {
+  width: 72px;
+  height: 72px;
+  margin: 0 0 24px;
+}
+#nc-root [class*="CustomIconWrapper"] img {
+  display: block;
+  width: 72px;
+  height: 72px;
+}
+#nc-root [class*="LoginButton"] {
+  background: #586e75;
+  color: #ffffff;
+  border: 1px solid #586e75;
+  border-radius: 3px;
+  box-shadow: none;
 }
 .admin-guide {
   position: relative;
@@ -11,12 +37,13 @@ body {
   align-items: center;
   gap: 1rem;
   padding: 12px 20px;
-  background: #28362e;
-  color: #eff0e9;
+  background: #ffffff;
+  border-bottom: 1px solid #d5cfbd;
+  color: #586e75;
   font-size: 13px;
 }
 .admin-guide a {
-  color: inherit;
+  color: #007e9e;
   text-decoration: none;
 }
 .admin-guide a:hover {
@@ -31,4 +58,20 @@ body {
     flex-basis: 100%;
     font-size: 12px;
   }
+}
+
+.markdown-import {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 13px;
+}
+.markdown-import input {
+  display: block;
+  max-width: 100%;
+}
+.markdown-import-status {
+  font-size: 12px;
+  margin-block: 8px;
+  color: #586e75;
 }

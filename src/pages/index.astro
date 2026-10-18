@@ -1,196 +1,101 @@
 ---
-import { localize } from "@/i18n/site";
-const s = localize(Astro.currentLocale);
 import { getCollection } from "astro:content";
 import { getRelativeLocaleUrl } from "astro:i18n";
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import Card from "@/components/Card.astro";
-import PersonalSidebar from "@/components/PersonalSidebar.astro";
-import MusicShelf from "@/components/MusicShelf.astro";
-import WelcomeNote from "@/components/WelcomeNote.astro";
 import { getSortedPosts } from "@/utils/getSortedPosts";
-import { getAssetPath } from "@/utils/withBase";
-import { personal, photos } from "@/data/personal";
+import { getUniqueTags } from "@/utils/getUniqueTags";
+import { slugifyAll } from "@/utils/slugify";
+import { localize } from "@/i18n/site";
+import { personal } from "@/data/personal";
 import config from "@/config";
 const locale = Astro.currentLocale ?? config.site.lang;
+const s = localize(locale);
 const posts = getSortedPosts(await getCollection("posts"));
-const featured = posts.filter(post => post.data.featured);
-const recent = posts
-  .filter(post => !post.data.featured)
-  .slice(0, config.posts.perIndex);
-const photo = photos[0];
+const recent = posts.slice(0, config.posts.perIndex);
+const tags = getUniqueTags(posts).map(tag => ({
+  ...tag,
+  count: posts.filter(post => slugifyAll(post.data.tags).includes(tag.tag))
+    .length,
+}));
 const homePath = getRelativeLocaleUrl(locale, "");
-const rssPath = getRelativeLocaleUrl(locale, "rss.xml").replace(/\/$/, "");
 ---
 
 <Layout>
   <Header />
   <main
     id="main-content"
-    class="wide-layout home-grid"
+    class="wide-layout home-page"
     data-home-path={homePath}
   >
-    <div class="home-main">
-      <section class="home-hero reveal">
-        <p class="eyebrow">{s("生活随笔 / 光影 / 一点探索")}</p>
-        <h1 class="display-title">
-          {s("知行之间")}<span class="title-dot">.</span>
-        </h1>
-        <p class="hero-lead">
-          {s("记录生活中的片刻，")}<br />{s("分享日常的感受与思考。")}
-        </p>
-        <p class="hero-description">
-          {
-            s(
-              "这里是知行博客，记录学习中的发现、实践中的经验，以及日常的思考。把想法写下来，把学到的东西用起来。"
-            )
-          }
-        </p>
-        <div class="hero-actions">
-          <a class="button-primary" href={getRelativeLocaleUrl(locale, "about")}
-            >{s("认识 w1nter")}<span aria-hidden="true">↗</span></a
-          ><a class="text-link" href={rssPath}
-            >{s("订阅 RSS")}<span aria-hidden="true">↗</span></a
-          >
-        </div>
-        <WelcomeNote />
-      </section>
-      <section
-        class="home-photography reveal"
-        aria-labelledby="photography-title"
-      >
-        <div class="section-heading">
-          <div>
-            <span class="eyebrow">01 / THROUGH MY LENS</span><h2
-              id="photography-title"
-            >
-              映 <span class="heading-note">{s("摄影集")}</span>
-            </h2>
-          </div><a
-            class="text-link"
-            href={getRelativeLocaleUrl(locale, "photography")}
-            >{s("进入摄影集 ↗")}</a
-          >
-        </div>
-        <a
-          class="photo-feature"
-          href={getRelativeLocaleUrl(locale, "photography")}
+    <section class="home-intro" aria-labelledby="intro-title">
+      <h1 id="intro-title">
+        {s("我是")}{" "}
+        <span class="sr-only">{personal.name}</span>
+        <span
+          class="intro-typewriter"
+          data-typewriter={personal.name}
+          aria-hidden="true"
         >
-          <div class="photo-feature-image">
-            <img
-              src={getAssetPath(photo?.src ?? personal.avatar)}
-              alt={photo?.alt ?? s("临时摄影集封面：w1nter 的 GitHub 头像")}
-              width="460"
-              height="460"
-              loading="lazy"
-            /><span class="photo-label"
-              >{photo ? s(photo.category) : s("临时封面 · GitHub 头像")}</span
-            >
-          </div>
-          <div class="photo-feature-copy">
-            <span class="eyebrow">{s("看见，也留下。")}</span><h3>
-              {s("一些人，")}<br />{s("一些毛茸茸。")}
-            </h3><p>
-              {
-                s(
-                  "人像、偶遇的猫狗，还有家里的猫。用照片收藏生活的另一种表达。"
-                )
-              }
-            </p><span class="round-arrow" aria-hidden="true">↗</span>
-          </div>
-        </a>
-        {
-          photos.length > 1 && (
-            <div class="photo-strip">
-              {photos.slice(1, 4).map(item => (
-                <a href={getRelativeLocaleUrl(locale, "photography")}>
-                  <img
-                    src={getAssetPath(item.src)}
-                    alt={item.alt}
-                    loading="lazy"
-                  />
-                </a>
-              ))}
-            </div>
-          )
-        }
-        <div class="category-row">
-          <span>{s("人像 / PORTRAITS")}</span><span
-            >{s("猫犬 / CATS & DOGS")}</span
+          <span class="intro-typewriter-sizer">{personal.name}</span>
+          <span class="intro-typewriter-text" data-typewriter-output
+            >{personal.name}</span
           >
-        </div>
-      </section>
-      <section class="writing-section reveal" aria-labelledby="writing-title">
-        <div class="section-heading">
-          <div>
-            <span class="eyebrow">02 / WORDS & DAYS</span><h2
-              id="writing-title"
-            >
-              {s("日常留白")}<span class="heading-note">{s("生活随笔")}</span>
-            </h2>
-          </div><a
-            class="text-link"
-            href={getRelativeLocaleUrl(locale, "posts")}>{s("所有文章 ↗")}</a
-          >
-        </div>
-        {
-          posts.length ? (
-            <>
-              {featured.length > 0 && (
-                <>
-                  <h3 class="eyebrow">{s("精选文章")}</h3>
-                  <ul>
-                    {featured.map(post => (
-                      <Card variant="h3" {...post} />
-                    ))}
-                  </ul>
-                </>
-              )}
-              {recent.length > 0 && (
-                <ul>
-                  {recent.map(post => (
-                    <Card variant="h3" {...post} />
-                  ))}
-                </ul>
-              )}
-            </>
-          ) : (
-            <div class="writing-empty">
-              <>
-                <span class="quotation-mark" aria-hidden="true">
-                  “
-                </span>
-                <p>{s("文字还在路上。")}</p>
-                <span>{s("这里将慢慢装下生活中的片刻、感受与思考。")}</span>
-              </>
-            </div>
-          )
-        }
-      </section>
-      <MusicShelf />
+        </span>
+      </h1>
+    </section>
+    <section class="writing-section" aria-labelledby="writing-title">
+      <header class="writing-heading">
+        <p>{s("我写的文章")}</p>
+        <h2 id="writing-title">{s("文章")}</h2>
+      </header>
+      {
+        tags.length > 0 && (
+          <nav class="writing-tags" aria-label={s("按标签浏览文章")}>
+            <span>{s("标签：")}</span>
+            {tags.map(tag => (
+              <a href={getRelativeLocaleUrl(locale, `tags/${tag.tag}`)}>
+                #{tag.tagName} <span>({tag.count})</span>
+              </a>
+            ))}
+          </nav>
+        )
+      }
+      {
+        posts.length ? (
+          <ul class="post-list">
+            {recent.map(post => (
+              <Card variant="h3" {...post} />
+            ))}
+          </ul>
+        ) : (
+          <div class="writing-empty">
+            <p>{s("还没有发表文章。")}</p>
+          </div>
+        )
+      }
       <a
-        class="text-link life-entry"
-        href={getRelativeLocaleUrl(locale, "life")}>{s("前往日常 ↗")}</a
+        class="text-link all-posts-link"
+        href={getRelativeLocaleUrl(locale, "posts")}
+        >{s("查看所有文章")} <span aria-hidden="true">→</span></a
       >
-      <p class="home-closing reveal">
-        {s("希望这些记录能帮助未来的自己，也给路过的你带来一点启发。")}
-      </p>
-    </div>
-    <PersonalSidebar />
+    </section>
   </main>
   <Footer />
 </Layout>
 <script>
+  import { initTypewriters } from "@/scripts/typewriter";
+  initTypewriters();
+  document.addEventListener("astro:page-load", initTypewriters);
   document.addEventListener("astro:page-load", () => {
     const main = document.querySelector<HTMLElement>("[data-home-path]");
-    if (main) {
-      try {
-        sessionStorage.setItem("backUrl", main.dataset.homePath ?? "/");
-      } catch {
-        /* Storage is optional. */
-      }
+    if (!main) return;
+    try {
+      sessionStorage.setItem("backUrl", main.dataset.homePath ?? "/");
+    } catch {
+      /* Storage is optional. */
     }
   });
 </script>

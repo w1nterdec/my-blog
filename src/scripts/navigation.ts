@@ -13,6 +13,19 @@ function setupNavigation() {
   const controller = new AbortController();
   const { signal } = controller;
   let frame = 0;
+  const updateCompact = () => {
+    frame = 0;
+    if (window.scrollY > 72) header.classList.add("is-compact");
+    else if (window.scrollY < 24) header.classList.remove("is-compact");
+  };
+  updateCompact();
+  window.addEventListener(
+    "scroll",
+    () => {
+      if (!frame) frame = requestAnimationFrame(updateCompact);
+    },
+    { passive: true, signal }
+  );
   const setOpen = (open: boolean) => {
     button.setAttribute("aria-expanded", String(open));
     button.setAttribute("aria-label", s(open ? "收起菜单" : "展开菜单"));
@@ -20,19 +33,6 @@ function setupNavigation() {
     header.dataset.menuOpen = String(open);
     if (open) languages.open = false;
   };
-  const updateScroll = () => {
-    frame = 0;
-    if (scrollY > 96) header.classList.add("is-compact");
-    else if (scrollY < 24) header.classList.remove("is-compact");
-  };
-  updateScroll();
-  window.addEventListener(
-    "scroll",
-    () => {
-      if (!frame) frame = requestAnimationFrame(updateScroll);
-    },
-    { passive: true, signal }
-  );
   button.addEventListener(
     "click",
     () => setOpen(button.getAttribute("aria-expanded") !== "true"),
@@ -48,8 +48,10 @@ function setupNavigation() {
   document.addEventListener(
     "pointerdown",
     event => {
-      if (event.target instanceof Node && !languages.contains(event.target))
-        languages.open = false;
+      if (event.target instanceof Node) {
+        if (!languages.contains(event.target)) languages.open = false;
+        if (!header.contains(event.target)) setOpen(false);
+      }
     },
     { signal }
   );
@@ -78,7 +80,6 @@ function setupNavigation() {
       const syncLocation = () => {
         const anchors: Record<string, string> = {
           关于我: "a-little-about-me",
-          关于知行博客: "about-this-journal",
           联系我: "find-me",
           网站致谢: "a-little-thank-you",
         };

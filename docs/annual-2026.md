@@ -1,62 +1,49 @@
-# 知行 2026 年度维护说明
+# w1nter部署与维护
 
-## 本轮的边界
+## 当前架构
 
-源码仓库公开，内容仓库 `w1nterdec/my-blog-content` 私有。后台只是独立加载的编辑器，博客仍由 Astro 生成静态文件；VPS 只增加一个仅在登录时工作的 GitHub OAuth 桥接进程。没有文章数据库、音乐流媒体或访客账号系统。
+源码仓库与私有内容仓库 w1nterdec/my-blog-content 分离。Astro 生成静态博客，Decap CMS 负责文章、项目文档与个人资料编辑；VPS 的 Node.js 服务只桥接 GitHub OAuth。没有文章数据库、访客账号或音乐播放服务。
 
-## 第一次接入
+本轮精简移除了摄影、音乐、歌词、碎碎念、游戏、孤岛和仓鼠。导航栏小黑保留轻量动画。主题固定为纯白底色，保留 Solarized Light 的文字、强调色与代码配色。原始私有内容没有在本轮本地修改中主动删除。
 
-1. `.env.admin` 填独立 OAuth App 的 Client ID/Secret；回调 `https://chenzhixing.bbroot.com/api/admin/callback`。
-2. 将 `server/admin/index.mjs`、`infrastructure/zhixing-admin.service`、`.env.admin`（改名 `admin.env`）放到服务器**网站根目录之外**的安装目录。密钥文件权限 `600`，不要用公共下载链接传送。
-3. 服务器管理员审阅 `infrastructure/setup-server.sh` 后，以 root 执行 `bash setup-server.sh /安装目录 deploy`。当前部署用户只有 chown/chmod/find 的 sudo 权限，无法代替 root 安装服务、续证或改 Nginx。
-4. 脚本保留旧配置、建立旧版本快照，配置真实 404、HTTPS 与后台代理。签发失败时不要开放 HTTP 后台登录，先检查域名解析、80/443 端口和证书日志。
-5. 预览确认后合并源码分支；私有仓库 Actions 变量 `SOURCE_REF` 改为 `main`、`ALLOW_PRODUCTION` 设为 `true`。此前发布保持关闭。
+## 后台与内容
 
-## 平时如何更新
+生产入口 https://chenzhixing.bbroot.com/admin/，说明在 /admin/guide.html。
 
-生产入口为 `https://chenzhixing.bbroot.com/admin/`，操作说明在 `/admin/guide.html`。源码以 `main` 为发布来源，私有内容仓库的 `ALLOW_PRODUCTION=true` 开启发布；若需暂停后续自动更新，可将该变量改为 `false`，当前线上版本继续保留。单次紧急回滚之后也应先暂停自动发布，避免下一次调度再次发布问题版本。
+- “文章”：Markdown、插图、封面、日期、标签、精选与撤回。
+- “项目文档”：独立 projects/ Markdown 集合，支持 README 文件导入和站内详情；与文章分开管理。
+- “个人资料与足迹”：头像、签名和旅行城市；继续使用 settings/journal.json。旧项目外链、所在城市与近况状态不再导出。
+- 关于页正文和英文介绍仍在源码中维护。
+- 保存草稿进入私有编辑分支；发布合并内容主分支。浏览器自动恢复不能代替保存。
+- 导出器只发布到期且非草稿文章与项目文档、个人资料和旅行足迹，以及正文、封面和头像引用的图片。旧生活模块字段不再进入生成 JSON。
+- 图片最长边 1920px、WebP、移除 EXIF；原图需独立备份。
 
-打开 `/admin/`，用 `w1nterdec` 登录。保存草稿进入私有分支；发布合并私有主分支并触发 CI。只接受 Markdown，避免在内容里运行 MDX/代码。可视化编辑、Markdown、插图、封面、标签和精选在随笔编辑页；其余内容在“生活与站点”编辑。列表可拖动排序。
+## 源码验证与生产发布
 
-编辑器的自动恢复存在本机浏览器。换设备前点击“保存”，这才同步到私有仓库；没有承诺每次按键都产生云端 Git 提交。正文预览在已登录编辑器中完成，不创建匿名可访问的私有预览站。
+本源码仓库 Actions 只验证 lint、测试和构建。生产发布工作流位于私有内容仓库；以下说明沿用既有部署约定，修改源码时也应核对该仓库实际配置。
 
-设未来发布时间后可以提前合并，导出器在发布时间前排除正文和图片。私有仓库每小时检查一次，只有公开内容或源码改变才构建/发布。排期可能延迟约一小时，GitHub 调度繁忙时更久；选这个频率是为控制免费 Actions 分钟额度，不能保证精确到分钟。普通内容发布立即触发构建。源码 push 先运行公开仓库验证，再由私有仓库下一次每小时调度同步；需要立即上线源码时手动运行私有仓库 Publish 工作流。
+生产来源由 SOURCE_REF 指定，ALLOW_PRODUCTION=true 才允许发布。普通内容发布触发构建；未来发布时间依赖每小时调度，可能延迟约一小时或更久。源码修改需由私有仓库后续调度同步，或手动运行其发布工作流。
 
-## 图片与版权
+内容导出使用 CONTENT_DIR，之后执行正式构建。发布失败继续保留旧版本。备份、定时任务和线上凭据不由本次本地构建配置或更新。
 
-只上传精选展示作品，原图自行备份。发布器仅处理公开条目引用的图片，最长边 1920px、WebP、移除 EXIF。后台填写日期、城市、器材和故事作为明确选择公开的信息，不会自动把 GPS 写到网页。可见展示图仍可被保存，禁止原图下载不能技术上阻止截图/复制。
+## OAuth 与服务器接入
 
-## 配置与安全
+1. 在独立 GitHub OAuth App 配置回调 https://chenzhixing.bbroot.com/api/admin/callback。
+2. 将 server/admin/index.mjs、服务配置和 OAuth 环境文件部署到网站根目录之外，凭据文件权限 600。
+3. 管理员审阅 infrastructure/setup-server.sh 后，以 root 执行安装。普通部署账号不能代替 root 安装服务或修改证书与 Nginx。
+4. HTTPS 配置 infrastructure/nginx-admin.conf 中的 OAuth 代理；不要开放 HTTP 后台登录。
+5. 服务 /api/admin/health 仅检查凭据是否配置；它不保证 GitHub 授权或生产发布成功。
 
-- OAuth 应用使用 GitHub `repo` scope，经典 OAuth 的权限范围较宽；仅允许站主登录、固定消息来源、HttpOnly 状态 cookie、单次短期 state。建议专用应用，离开共享设备后退出后台并在 GitHub 撤销授权。
-- `.private/`、`.env.*`、生成内容、原图目录都排除 Git 与 Docker 构建上下文。
-- OAuth 凭据不应出现在浏览器代码、Actions 输出、公开上传目录或 Git 历史。
-- 私有内容仅由私有仓库自己的 GitHub Actions token 读取；公开源码验证流程不读草稿，不保存个人长期全权限 token。
-- 私有仓库 Actions 的访问者能看到构建日志；导出器不打印草稿内容。构建失败保持旧版网站。
-- 库审计在本次修复后为零；年度检查不能承诺未来依赖没有漏洞。建议开启 Dependabot 安全提醒，必要时提前维护。
+OAuth 使用 repo scope，仅允许配置的站主登录，并使用单次短期 state、HttpOnly cookie 和固定消息来源。共享设备使用后退出后台，必要时在 GitHub 撤销授权。
 
-## 发布和回滚
+## 回滚
 
-每次上传独立 `releases/<id>`，确认页面完整后原子切换 `current`。旧官方文章不再因为覆盖上传而残留在新版本里；Nginx 的真正 404 不再把不存在的路径显示为首页。激活健康检查失败自动切回上个版本。
+infrastructure/activate-release.sh 将独立 releases/<id> 原子切换到 current，健康检查失败时恢复上一版。手动操作前应暂停自动发布，并确认 .previous-release 指向 releases/ 内存在的版本。
 
-人工回滚：在服务器 `/var/www/astro-blog` 下读取 `.previous-release`，确认目标在 `releases/` 内且存在，再执行 `ln -s "$(cat .previous-release)" .current-next && mv -Tf .current-next current`。恢复的是网站文件；若要之后一直保留，仍需撤回对应内容/源码提交。
+回滚恢复网站文件；若需持续保留，还应撤回对应内容或源码修改，避免后续调度重新发布。清理旧版本时不要删除 current 或 .previous-release 指向的目录。
 
-每年检查并清理不再需要的旧 release，保留现行、上一版和最近 7 个成功版本；不要删除 `current` 或 `.previous-release` 指向的目录。
+## 备份与统计
 
-## 独立备份与故障通知
+既有私有仓库约定为每周加密完整 Git bundle，上传网站目录之外并保留最近 4 份。恢复密钥需离线保存；具体任务是否正常以私有工作流和服务器为准。Git 历史不能代替独立备份，原图应另存。
 
-Git 历史不是独立备份。私有仓库每周将包含草稿分支的完整 Git bundle 用独立密钥加密，上传到 VPS 网站目录之外的 `.zhixing-backups`，保留最近 4 份。恢复密钥在本机 `.private/backup-recovery.key`，请另存到私有备份盘；密钥丢失无法解密。恢复时用 `gpg --decrypt backup.bundle.gpg > content.bundle`，再 `git clone content.bundle recovered-content`。
-
-同时建议每月在自己的备份盘执行 `git clone --mirror https://github.com/w1nterdec/my-blog-content.git`（以后 `git remote update`），原图另存。源代码同样备份。可恢复时在新私有仓库 `git push --mirror`，随后修改后台 repo 和 CI 地址。备份盘必须私有。
-
-GitHub Settings → Notifications → Actions 开启失败通知；证书续期由 certbot.timer 管理，服务器管理员每年执行 `certbot renew --dry-run`。本轮没有擅自创建邮件发送服务。服务器安装脚本设置每天 03:23 的日志汇总，不把请求数当成真实独立访客。
-
-## 仍待外部接入的可选项目
-
-giscus 需你安装 GitHub App 并启用公共仓库 Discussions；未接通前不展示假的评论区。访问统计采用每天从 Nginx 日志提取的年度页面请求数，包含机器人，公开 JSON 没有 IP 或用户代理。首次服务器安装后开始累计，不虚构以往访客数。四张偏爱的唱片已有封面和 Spotify 链接，歌词、摄影作品与城市故事可在后台继续补充。游戏完整模块延后。
-
-## 本轮交互维护
-
-小黑静止时保持正面对称，行走时轻微侧转头；步态按实际移动距离推进，头部转向平滑过渡。页面顶端和小院使用独立动作时钟。仓鼠随机选择落脚点，石子藏在另一个位置；点击拾取、交给仓鼠后解锁孤岛地图，进度只保存在当前浏览器标签的会话中。手机和键盘可用按钮完成交换，桌面也支持拖动。孤岛是公开页面，不能作为私密记录存储。
-
-这些交互由浏览器执行，不增加 VPS 动态请求。离屏或页面隐藏时暂停主要动画；开启“减少动态效果”时停用装饰动画。没有独立开场视频、音乐播放服务或访客数据库。
+建议在 GitHub 开启 Actions 失败通知，管理员定期验证证书续期。infrastructure/log-stats.py 从 Nginx 日志汇总年度页面请求数，包含机器人，不代表独立访客；公开统计不包含原始 IP 和用户代理。

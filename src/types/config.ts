@@ -15,6 +15,8 @@ interface SiteConfig {
   lang?: string;
   /** IANA timezone for post dates, e.g. "Asia/Bangkok" */
   timezone?: string;
+  /** Blog launch date (YYYY-MM-DD), used for the footer's elapsed calendar days. */
+  startedAt?: string;
   /** Text direction */
   dir?: "ltr" | "rtl" | "auto";
   /** Google Search Console verification meta tag value */
@@ -34,8 +36,6 @@ interface PostsConfig {
 }
 
 interface FeaturesConfig {
-  /** Enable light/dark mode toggle. Defaults to true. */
-  lightAndDarkMode?: boolean;
   /**
    * Generate dynamic OG images per post and provide `/og.png` when the static
    * `public/{site.ogImage}` file is absent. When false, that file is required
@@ -115,7 +115,7 @@ type ResolvedSiteConfig = Required<
     | "ogImage"
   >
 > &
-  Pick<SiteConfig, "profile" | "googleVerification">;
+  Pick<SiteConfig, "profile" | "googleVerification" | "startedAt">;
 
 export interface ResolvedAstroPaperConfig {
   site: ResolvedSiteConfig;

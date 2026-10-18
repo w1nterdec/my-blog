@@ -1,8 +1,7 @@
-/* Editor-only previews. Draft text stays inside the authenticated CMS iframe. */
+/* Previews stay inside the authenticated editor. */
 (function () {
   const h = window.h;
   const dataOf = entry => entry.get("data")?.toJS() ?? {};
-  const list = value => (Array.isArray(value) ? value : []);
   const text = value => (typeof value === "string" ? value : "");
   const date = value => {
     const parsed = new Date(value);
@@ -13,15 +12,6 @@
           timeZone: "Asia/Shanghai",
         }).format(parsed)
       : "待填写时间";
-  };
-  const badge = (item, index) => {
-    const scheduled =
-      item.pubDatetime && Date.parse(item.pubDatetime) > Date.now();
-    return h(
-      "span",
-      { className: "preview-badge", key: index },
-      item.draft ? "暂不公开" : scheduled ? "排期待发布" : "发布后展示"
-    );
   };
   const image = (path, alt, getAsset, entry, className) => {
     if (!path) return null;
@@ -44,41 +34,27 @@
             path.startsWith("blob:")
           ? path
           : `/${path}`;
-      return h("img", { src: source, alt: alt || "展示图片", className });
+      return h("img", { src: source, alt: alt || "图片预览", className });
     } catch {
-      return h(
-        "p",
-        { className: "preview-help" },
-        "图片正在载入，或尚未选择。"
-      );
+      return h("p", { className: "preview-help" }, "图片正在载入。");
     }
   };
-  const section = (title, children) =>
-    h(
-      "section",
-      { className: "preview-section" },
-      h("h2", null, title),
-      children
-    );
   function PostPreview({ entry, getAsset, widgetFor }) {
     const data = dataOf(entry);
+    const scheduled =
+      data.pubDatetime && Date.parse(data.pubDatetime) > Date.now();
     return h(
       "article",
       { className: "post-preview" },
-      h("p", { className: "preview-eyebrow" }, "知行 · 随笔预览"),
+      h("p", { className: "preview-eyebrow" }, "w1nter · 文章预览"),
       h(
-        "div",
-        { className: "preview-badges" },
-        badge(data),
-        data.featured &&
-          h("span", { className: "preview-badge" }, "置顶 / 精选")
+        "span",
+        { className: "preview-badge" },
+        data.draft ? "暂不公开" : scheduled ? "排期待发布" : "发布后展示"
       ),
-      h("h1", null, text(data.title) || "给这一篇，起个名字"),
-      h(
-        "p",
-        { className: "preview-description" },
-        text(data.description) || "摘要会出现在文章列表里。"
-      ),
+      data.featured && h("span", { className: "preview-badge" }, "精选"),
+      h("h1", null, text(data.title) || "文章标题"),
+      h("p", { className: "preview-description" }, text(data.description)),
       h(
         "p",
         { className: "preview-help" },
@@ -87,28 +63,29 @@
         text(data.author) || "w1nter"
       ),
       h(
-        "div",
+        "p",
         { className: "preview-tags" },
-        list(data.tags).map((tag, index) =>
-          h("span", { key: index }, `# ${tag}`)
-        )
+        (Array.isArray(data.tags) ? data.tags : [])
+          .map(tag => `#${tag}`)
+          .join("  ")
       ),
       image(data.ogImage, data.title, getAsset, entry, "preview-cover"),
       h("div", { className: "preview-body" }, widgetFor("body")),
       h(
         "p",
         { className: "preview-help" },
-        "这是编辑预览；保存草稿与发布是两个独立步骤。"
+        "保存草稿后，点击发布才会更新网站。"
       )
     );
   }
   function JournalPreview({ entry, getAsset }) {
     const data = dataOf(entry);
     const personal = data.personal ?? {};
+    const places = Array.isArray(data.places) ? data.places : [];
     return h(
-      "div",
-      { className: "journal-preview" },
-      h("p", { className: "preview-eyebrow" }, "知行 · 生活与站点预览"),
+      "article",
+      null,
+      h("p", { className: "preview-eyebrow" }, "w1nter · 个人资料与旅行足迹"),
       h(
         "header",
         { className: "preview-profile" },
@@ -122,146 +99,45 @@
         h(
           "div",
           null,
-          h("h1", null, text(personal.name) || "w1nter"),
-          h("p", null, text(personal.signature)),
-          h("p", { className: "preview-help" }, text(personal.location))
+          h("h1", null, text(personal.name)),
+          h("p", null, text(personal.signature))
         )
       ),
-      section(
-        "此刻",
-        h("p", null, text(personal.status) || "近期状态，慢慢补上。")
-      ),
-      section(
-        "正在做的项目",
+
+      places.length > 0 &&
         h(
-          "div",
-          { className: "preview-card" },
-          h("h3", null, text(personal.project?.name)),
-          h("p", null, text(personal.project?.description))
-        )
-      ),
-      section(
-        "映 · 摄影",
-        list(data.photos).length
-          ? h(
+          "section",
+          { className: "preview-section" },
+          h("h2", null, "旅行足迹"),
+          ...places.map((place, index) =>
+            h(
               "div",
-              { className: "preview-grid" },
-              list(data.photos).map((photo, index) =>
-                h(
-                  "article",
-                  { className: "preview-card", key: index },
-                  image(photo.src, photo.alt || photo.title, getAsset, entry),
-                  badge(photo),
-                  h("h3", null, text(photo.title)),
-                  h(
-                    "p",
-                    { className: "preview-help" },
-                    [photo.category, photo.date, photo.location, photo.camera]
-                      .filter(Boolean)
-                      .join(" · ")
-                  ),
-                  h("p", null, text(photo.story))
-                )
-              )
-            )
-          : h(
-              "p",
-              { className: "preview-help" },
-              "还没有作品。上传精选展示图后会出现在这里。"
-            )
-      ),
-      section(
-        "聆 · 音乐",
-        h(
-          "div",
-          { className: "preview-grid" },
-          list(data.music).map((record, index) =>
-            h(
-              "article",
-              { className: "preview-card", key: index },
-              image(
-                record.cover,
-                record.title || record.artist,
-                getAsset,
-                entry
+              { className: "preview-place", key: index },
+              h("h3", null, text(place.name)),
+              h(
+                "p",
+                { className: "preview-help" },
+                [place.residence, place.visited ? "旅行" : ""]
+                  .filter(Boolean)
+                  .join(" · ")
               ),
-              badge(record),
-              h("h3", null, text(record.title) || text(record.artist)),
-              h("p", { className: "preview-help" }, text(record.artist)),
-              h("p", null, text(record.thought)),
-              record.lyricSong &&
-                h("p", { className: "preview-help" }, text(record.lyricSong)),
-              list(record.lyrics).length
-                ? h(
-                    "blockquote",
-                    { className: "preview-lyrics" },
-                    list(record.lyrics).map((line, lineIndex) =>
-                      h("p", { key: lineIndex }, line)
-                    )
-                  )
-                : h("p", { className: "preview-help" }, "歌词摘句待填写。")
+              h("p", null, text(place.description))
             )
           )
         )
-      ),
-      section(
-        "碎碎念与孤岛",
-        list(data.notes).map((note, index) =>
-          h(
-            "article",
-            { className: "preview-card", key: index },
-            badge(note),
-            h(
-              "p",
-              { className: "preview-help" },
-              date(note.pubDatetime),
-              note.island ? " · 孤岛（公开彩蛋）" : " · 日常"
-            ),
-            h("p", { className: "preview-note" }, text(note.body))
-          )
-        )
-      ),
-      section(
-        "城市故事",
-        list(data.places).map((place, index) =>
-          h(
-            "article",
-            { className: "preview-card", key: index },
-            h("h3", null, text(place.name)),
-            h("p", null, text(place.description))
-          )
-        )
-      ),
-      section(
-        "游 · 游戏",
-        list(data.games).map((game, index) =>
-          h(
-            "article",
-            { className: "preview-card", key: index },
-            badge(game),
-            h("h3", null, text(game.title)),
-            h(
-              "p",
-              { className: "preview-help" },
-              [
-                game.platform,
-                game.status,
-                game.score == null ? null : `${game.score} / 10`,
-              ]
-                .filter(Boolean)
-                .join(" · ")
-            ),
-            h("p", null, text(game.thought))
-          )
-        )
-      ),
-      h(
-        "p",
-        { className: "preview-help" },
-        "预览包含你正在编辑的私有条目；发布器会排除暂不公开和未到发布时间的内容。"
-      )
     );
   }
   CMS.registerPreviewTemplate("posts", PostPreview);
+  CMS.registerPreviewTemplate("projects", ({ entry, widgetFor }) => {
+    const data = dataOf(entry);
+    return h(
+      "article",
+      { className: "post-preview" },
+      h("p", { className: "preview-eyebrow" }, "w1nter · 项目文档预览"),
+      h("h1", null, text(data.title) || "项目标题"),
+      h("p", { className: "preview-description" }, text(data.description)),
+      h("div", { className: "preview-body" }, widgetFor("body"))
+    );
+  });
   CMS.registerPreviewTemplate("journal", JournalPreview);
 })();

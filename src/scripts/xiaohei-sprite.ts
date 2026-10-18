@@ -1,11 +1,8 @@
-export type CatMood = "idle" | "look" | "walk" | "happy" | "stretch" | "sleep";
+export type CatMood = "idle" | "walk";
 export interface CatPose {
   mood: CatMood;
   time: number;
   facing: number;
-  lookX: number;
-  lookY: number;
-  dark: boolean;
   reduced: boolean;
   stride?: number;
   turn?: number;
@@ -20,7 +17,7 @@ export function drawXiaohei(ctx: CanvasRenderingContext2D, pose: CatPose) {
     ? 0
     : Math.max(0, Math.min(1, pose.turn ?? (moving ? 1 : 0)));
   const ink = "#0b1920",
-    rim = pose.dark ? "#947365" : "#60362f",
+    rim = "#586e75",
     cream = "#fffefd";
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -67,23 +64,11 @@ export function drawXiaohei(ctx: CanvasRenderingContext2D, pose: CatPose) {
     ctx.lineJoin = "round";
     ctx.stroke(new Path2D(d));
   };
-  ellipse(51, 89, 29, 1.7, pose.dark ? "#c7c2a015" : "#302d2314");
-  const bob =
-    pose.mood === "happy"
-      ? -Math.abs(Math.sin(t * 5)) * 2
-      : moving
-        ? -Math.abs(Math.sin(stride)) * 0.5
-        : Math.sin(t * 1.8) * 0.3;
+  ellipse(51, 89, 29, 1.7, "#586e7514");
+  const bob = moving
+    ? -Math.abs(Math.sin(stride)) * 0.5
+    : Math.sin(t * 1.8) * 0.3;
   ctx.translate(0, bob);
-  if (pose.mood === "sleep") {
-    ellipse(52, 76, 29, 11, ink, 0, true);
-    ellipse(33, 69, 21, 16, ink, 0, true);
-    shape("M15 65 16 49 29 59M45 59 59 66 49 77");
-    line("M20 70q5 4 10 0M35 70q5 4 10 0", cream, 2);
-    ellipse(38, 85, 8, 2);
-    ctx.restore();
-    return;
-  }
   // Tail and rear paws stay behind the body; front paws have their own outline.
   shape(`M37 85C19 86 10 77 14 ${70 + Math.sin(t * 1.8)}c4-7 9-6 12 3l11 10Z`);
   if (moving) {
@@ -136,7 +121,7 @@ export function drawXiaohei(ctx: CanvasRenderingContext2D, pose: CatPose) {
   });
   ellipse(50, 38, 40, 29, ink, 0, true);
   const blink = !pose.reduced && t % 6.4 > 6.26;
-  if (blink || pose.mood === "happy" || pose.mood === "stretch") {
+  if (blink) {
     mirrored(() => line("M19 35q12-10 24 0", cream, 2.6));
   } else {
     ellipse(31 + turn * 6, 36, 17 - turn * 3, 21, cream, 0, true);
@@ -147,12 +132,5 @@ export function drawXiaohei(ctx: CanvasRenderingContext2D, pose: CatPose) {
   ctx.translate(turn * 8, 0);
   shape("M50 53q-1-1-2 1l-3 7q5 2 10 0l-3-7q-1-2-2-1Z", "#77c2ce");
   ctx.restore();
-  if (pose.mood === "happy" && !pose.reduced) {
-    ctx.save();
-    ctx.translate(85, 12 - (t % 1.8) * 3);
-    ctx.scale(0.6, 0.6);
-    shape("M0 3C-5-2-8 5 0 10C8 5 5-2 0 3", "#b28b7d", false);
-    ctx.restore();
-  }
   ctx.restore();
 }

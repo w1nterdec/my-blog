@@ -2,14 +2,7 @@
   "personal": {
     "name": "w1nter",
     "signature": "attention is all my need",
-    "avatar": "avatar.webp",
-    "location": "中国 · 武汉",
-    "status": "最近在上学，也在做个人 AI 工程项目。",
-    "project": {
-      "name": "techrag-lab",
-      "description": "面向中文技术知识的 AI 工程系统，涵盖数据集工程、微调、RAG 与部署。",
-      "url": "https://github.com/w1nterdec/techrag-lab"
-    }
+    "avatar": "avatar.webp"
   },
   "places": [
     {
@@ -43,69 +36,6 @@
       "coordinates": [114.39, 36.1],
       "visited": true,
       "description": "旅行足迹中的一座城，期待再把记忆写下来。"
-    }
-  ],
-  "photos": [],
-  "music": [
-    {
-      "id": "justin-swag",
-      "title": "SWAG",
-      "artist": "Justin Bieber",
-      "kind": "专辑",
-      "spotify": "https://open.spotify.com/album/5vD5M5VW62LL78Ko8x0CVZ",
-      "draft": false
-    },
-    {
-      "id": "justin-stay",
-      "title": "STAY",
-      "artist": "The Kid LAROI · Justin Bieber",
-      "kind": "单曲",
-      "spotify": "https://open.spotify.com/track/5HCyWlXZPP0y6Gqq8TgA20",
-      "draft": false
-    },
-    {
-      "id": "justin-peaches",
-      "title": "Peaches",
-      "artist": "Justin Bieber · Daniel Caesar · GIVĒON",
-      "kind": "单曲",
-      "spotify": "https://open.spotify.com/track/1bx1nJqqRtSse54ZSGQdCV",
-      "draft": false
-    },
-    {
-      "id": "justin-heartbreaker",
-      "title": "Heartbreaker",
-      "artist": "Justin Bieber",
-      "kind": "单曲",
-      "spotify": "https://open.spotify.com/track/0a2SPjgz8tix3HBZVZrwsI",
-      "draft": false
-    },
-    {
-      "id": "winter",
-      "artist": "WINTER · 金冬天",
-      "kind": "歌手",
-      "draft": false
-    },
-    {
-      "id": "eason-chan",
-      "artist": "陈奕迅",
-      "kind": "歌手",
-      "draft": false
-    },
-    {
-      "id": "li-ronghao",
-      "artist": "李荣浩",
-      "kind": "歌手",
-      "draft": false
-    }
-  ],
-  "notes": [],
-  "games": [
-    {
-      "id": "pubg",
-      "title": "PUBG",
-      "platform": "PC · Steam",
-      "status": "游玩中",
-      "draft": false
     }
   ]
 }
