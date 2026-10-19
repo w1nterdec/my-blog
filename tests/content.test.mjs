@@ -1,113 +1,87 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import {
-  mkdtemp,
-  mkdir,
-  writeFile,
-  readdir,
-  readFile,
-  rm,
-} from "node:fs/promises";
+import { mkdtemp, mkdir, writeFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import sharp from "sharp";
-import { eligible, exportContent } from "../scripts/sync-content.mjs";
-test("drafts and scheduled items remain private at the exact publication boundary", () => {
-  const now = Date.parse("2026-10-10T00:00:00Z");
-  assert.equal(eligible({ draft: true }, now), false);
-  assert.equal(eligible({ pubDatetime: "2026-10-10T00:00:01Z" }, now), false);
-  assert.equal(eligible({ pubDatetime: "2026-10-10T00:00:00Z" }, now), true);
-  assert.throws(() => eligible({ pubDatetime: "invalid" }, now));
-  assert.throws(() => eligible({ draft: "true" }, now), /boolean/);
-});
-test("export excludes private bodies, unused photos, extra fields, and original metadata", async () => {
-  const dir = await mkdtemp(join(tmpdir(), "zhixing-content-test-"));
+import { checkContent } from "../scripts/check-content.mjs";
+
+const metadata =
+  "---\ntitle: Example\ndescription: Summary\npubDatetime: 2026-01-01T00:00:00+08:00\n";
+async function fixture(run) {
+  const root = await mkdtemp(join(tmpdir(), "blog-content-"));
+  const write = async (path, body) => {
+    await mkdir(join(root, path, ".."), { recursive: true });
+    await writeFile(join(root, path), body);
+  };
   try {
-    const content = join(dir, "private"),
-      output = join(dir, "site");
-    for (const path of ["settings", "posts", "media"])
-      await mkdir(join(content, path), { recursive: true });
-    const raw = await sharp({
-      create: { width: 2400, height: 1200, channels: 3, background: "green" },
-    })
-      .jpeg()
-      .withMetadata()
-      .toBuffer();
-    await writeFile(join(content, "media/real.jpg"), raw);
-    await writeFile(join(content, "media/unused.jpg"), raw);
-    await writeFile(
-      join(content, "settings/journal.json"),
-      JSON.stringify({
-        personal: {
-          name: "test",
-          avatar: "avatar.webp",
-          project: {},
-          location: "REMOVED_PROFILE_FIELD",
-          status: "REMOVED_PROFILE_FIELD",
-          secret: "PRIVATE",
-        },
-        places: [],
-        photos: [
-          { title: "public", category: "风光", src: "/media/real.jpg" },
-          { draft: true, title: "PRIVATE", src: "/media/unused.jpg" },
-        ],
-        notes: [{ draft: true, body: "PRIVATE" }],
-        music: [
-          {
-            id: "record",
-            artist: "test",
-            lyricSong: "test song",
-            lyrics: ["  a public line  ", ""],
-            secret: "PRIVATE",
-          },
-          { draft: true, id: "private-record", lyrics: ["PRIVATE"] },
-        ],
-        games: [],
-      })
-    );
-    await writeFile(
-      join(content, "posts/draft.md"),
-      "---\ntitle: secret\ndraft: true\n---\nPRIVATE"
-    );
-    await writeFile(
-      join(content, "posts/future.md"),
-      "---\ntitle: later\npubDatetime: 2099-01-01T00:00:00Z\n---\nPRIVATE"
-    );
-    await writeFile(
-      join(content, "posts/public.md"),
-      "---\ntitle: public\ndescription: summary\npubDatetime: 2020-01-01T00:00:00Z\n---\n![test](/media/real.jpg)"
-    );
-    const out = await exportContent(content, output);
-    assert.equal(JSON.stringify(out).includes("PRIVATE"), false);
-    assert.equal(JSON.stringify(out).includes("REMOVED_PROFILE_FIELD"), false);
-    assert.deepEqual(Object.keys(out).sort(), ["personal", "places"]);
-    assert.equal(JSON.stringify(out).includes("public line"), false);
-    assert.deepEqual(
-      await readdir(join(output, "src/content/posts/_published")),
-      ["public.md"]
-    );
-    const images = await readdir(join(output, "public/uploads"));
-    assert.equal(images.length, 1);
-    const metadata = await sharp(
-      join(output, "public/uploads", images[0])
-    ).metadata();
-    assert.equal(metadata.width, 1920);
-    assert.equal(metadata.exif, undefined);
-    assert.equal(
-      (
-        await readFile(
-          join(output, "src/content/posts/_published/public.md"),
-          "utf8"
-        )
-      ).includes("/media/"),
-      false
-    );
+    await run(root, write);
   } finally {
-    await rm(dir, {
-      recursive: true,
-      force: true,
-      maxRetries: 5,
-      retryDelay: 100,
-    });
+    await rm(root, { recursive: true, force: true });
   }
+}
+
+test("valid public covers, Markdown references, HTML and relative images pass; code examples are ignored", async () => {
+  await fixture(async (root, write) => {
+    await write("public/images/cover.webp", "image");
+    await write("src/content/posts/demo/diagram.png", "image");
+    await write(
+      "src/content/posts/demo/index.md",
+      `${metadata}ogImage: /images/cover.webp\n---\n![inline](/images/cover.webp?v=1)\n![relative](./diagram.png)\n![reference][cover]\n\n[cover]: /images/cover.webp\n\n<img src="/images/cover.webp" alt="cover">\n\n\`![code](/missing.png)\`\n\n\`\`\`md\n![example](/missing.png)\n\`\`\`\n`
+    );
+    await write(
+      "src/content/projects/demo/README.md",
+      "# Demo\n\nA plain README.\n\n![remote](https://example.com/image.png)"
+    );
+    assert.deepEqual(await checkContent(root), []);
+  });
+});
+
+test("missing covers and body images fail with the originating file and URL", async () => {
+  await fixture(async (root, write) => {
+    await write(
+      "src/content/posts/broken.md",
+      `${metadata}ogImage: /images/missing.webp\n---\n![missing][photo]\n\n[photo]: /images/body.png\n\n<img src="/images/html.png">`
+    );
+    const errors = await checkContent(root);
+    assert.equal(errors.length, 3);
+    for (const url of ["missing.webp", "body.png", "html.png"])
+      assert.ok(
+        errors.some(error => error.includes("broken.md") && error.includes(url))
+      );
+  });
+});
+
+test("case differences, old generated URLs and relative covers are rejected before Astro builds", async () => {
+  await fixture(async (root, write) => {
+    await write("public/images/Cover.png", "image");
+    await write(
+      "src/content/posts/broken.md",
+      `${metadata}ogImage: ./cover.png\n---\n![case](/images/cover.png)\n![legacy](/uploads/7d7d99a489b4d7117f769fcd.webp)`
+    );
+    const errors = await checkContent(root);
+    assert.equal(errors.length, 3);
+    assert.ok(errors.some(error => error.includes("大小写")));
+    assert.ok(errors.some(error => error.includes("旧图片路径")));
+    assert.ok(errors.some(error => error.includes("ogImage")));
+  });
+});
+
+test("drafts still require valid source; legacy generated folders never enter local publishing", async () => {
+  await fixture(async (root, write) => {
+    await write(
+      "src/content/posts/_published/legacy.md",
+      "stale generated content"
+    );
+    await write(
+      "src/content/posts/draft.md",
+      `${metadata}draft: true\n---\n![draft](/images/missing.png)`
+    );
+    await write("src/content/posts/plain.md", "No metadata");
+    await write("src/content/projects/demo.markdown", "# Rename me");
+    const errors = await checkContent(root);
+    assert.equal(errors.length, 3);
+    assert.ok(errors.some(error => error.includes("draft.md")));
+    assert.ok(errors.some(error => error.includes("frontmatter")));
+    assert.ok(errors.some(error => error.includes(".md 文件")));
+  });
 });

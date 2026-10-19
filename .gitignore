@@ -20,6 +20,7 @@ pnpm-debug.log*
 !.env.example
 .private/
 .content-state/
+# Legacy generated content stays ignored; new images belong in public/images/.
 public/uploads/
 src/content/posts/_published/
 src/content/projects/_published/

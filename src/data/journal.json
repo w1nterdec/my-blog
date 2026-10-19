@@ -1,0 +1,41 @@
+{
+  "personal": {
+    "name": "w1nter",
+    "signature": "Attention Is All You Need",
+    "avatar": "avatar.webp"
+  },
+  "places": [
+    {
+      "name": "武汉",
+      "coordinates": [114.3, 30.59],
+      "residence": "现居",
+      "visited": false,
+      "description": "江城故事👣🏫🫠🏎️"
+    },
+    {
+      "name": "雁江",
+      "coordinates": [104.07, 30.57],
+      "residence": "现居",
+      "visited": false,
+      "description": "当然是我的家啦🏠🤗"
+    },
+    {
+      "name": "洛阳",
+      "coordinates": [112.45, 34.62],
+      "visited": true,
+      "description": "一些美好的回忆，25年5月曾去玩过💤💐"
+    },
+    {
+      "name": "合肥",
+      "coordinates": [117.23, 31.82],
+      "visited": true,
+      "description": "26年最新旅游日志啦，国庆去玩了，很不错的城市，酸菜鱼，泸州烤鸭，淮河路附近的猪脚饭🥰🤩"
+    },
+    {
+      "name": "安阳",
+      "coordinates": [114.39, 36.1],
+      "visited": true,
+      "description": "也是一座充满回忆的城市☃️💐🍁🌼"
+    }
+  ]
+}

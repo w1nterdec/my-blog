@@ -18,7 +18,7 @@ export default defineConfig({
   integrations: [
     sitemap({
       filter: page =>
-        !/\/(?:404(?:\.html)?|admin|search)\/?$/.test(page) &&
+        !/\/(?:404(?:\.html)?|search)\/?$/.test(page) &&
         (config.features?.showArchives !== false ||
           !page.endsWith("/archives/")),
     }),

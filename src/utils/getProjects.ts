@@ -16,7 +16,7 @@ export async function getProjects() {
         ...project.data,
         ...projectDocument(project.data, project.body ?? "", project.id),
       },
-      slug: project.id.replace(/^_published\//, "").replace(/\/readme$/i, ""),
+      slug: project.id.replace(/\/readme$/i, ""),
     }))
     .sort(
       (a, b) =>

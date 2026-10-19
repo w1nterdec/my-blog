@@ -1,13 +1,15 @@
-name: Validate Astro source
+name: Validate and deploy blog
 on:
   push:
     branches: [main, codex/annual-2026]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 permissions:
   contents: read
 concurrency:
-  group: validate-${{ github.ref }}
-  cancel-in-progress: true
+  group: blog-${{ github.ref }}
+  cancel-in-progress: false
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   ASTRO_TELEMETRY_DISABLED: "1"
@@ -22,7 +24,55 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
-      - run: npm run lint && node --test tests/*.test.mjs
+      - run: npm run lint && npm test
       - run: npm run build
-# Publication is owned by the PRIVATE content repository workflow. It checks
-# the latest source hourly as well as reacting to each content publication.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: blog-release
+          path: |
+            dist/
+            infrastructure/activate-release.sh
+          retention-days: 7
+          if-no-files-found: error
+  deploy:
+    needs: validate
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      ECS_HOST: ${{ secrets.ECS_HOST }}
+      ECS_USER: ${{ secrets.ECS_USER }}
+      ECS_PORT: ${{ secrets.ECS_PORT || '22' }}
+      ECS_SSH_KEY: ${{ secrets.ECS_SSH_KEY }}
+      ECS_KNOWN_HOSTS: ${{ secrets.ECS_KNOWN_HOSTS }}
+      RELEASE_ID: source-${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: blog-release
+          path: release
+      - name: Configure verified SSH access
+        shell: bash
+        run: |
+          set -euo pipefail
+          for name in ECS_HOST ECS_USER ECS_SSH_KEY ECS_KNOWN_HOSTS; do
+            [[ -n "${!name}" ]] || { echo "Missing Actions secret: $name" >&2; exit 1; }
+          done
+          [[ "$ECS_PORT" =~ ^[0-9]+$ ]]
+          [[ "$ECS_HOST" != -* && "$ECS_USER" != -* ]]
+          install -d -m 700 "$HOME/.ssh"
+          printf '%s\n' "$ECS_SSH_KEY" > "$HOME/.ssh/deploy_key"
+          printf '%s\n' "$ECS_KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/deploy_key" "$HOME/.ssh/known_hosts"
+      - name: Upload and activate the validated build
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="$ECS_USER@$ECS_HOST"
+          remote="/var/www/astro-blog/releases/$RELEASE_ID"
+          export RSYNC_RSH="ssh -i $HOME/.ssh/deploy_key -p $ECS_PORT -o BatchMode=yes -o StrictHostKeyChecking=yes"
+          ssh -i "$HOME/.ssh/deploy_key" -p "$ECS_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes "$target" "mkdir -p '$remote'"
+          printf '%s' "$RELEASE_ID" > release/dist/release.txt
+          rsync -rltz --chmod=D755,F644 release/dist/ "$target:$remote/"
+          rsync -rltz release/infrastructure/activate-release.sh "$target:$remote/.activate-release.sh"
+          ssh -i "$HOME/.ssh/deploy_key" -p "$ECS_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes "$target" "bash '$remote/.activate-release.sh' '$RELEASE_ID'"
