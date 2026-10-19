@@ -120,7 +120,7 @@ git push origin main
 顺序执行，防止两个仓库同时覆盖网站：
 
 1. 备份旧内容仓库 `w1nterdec/my-blog-content`，保留 Markdown、`media/` 原图与 Git 历史。在其 Actions 页面禁用 **Publish private editorial content**，并取消仍在等待或运行的发布任务。仅取消某次任务不等于关闭定时发布。旧加密备份工作流可保留，但不能代替新源码仓库的备份。
-2. 已将提交 `57655013fccbf5606f4088d28be6c0235e4542ef` 对应的已发布文章 `hello-w1nter.md` 和原始封面迁入本仓库，正文保留写作时的架构介绍，仅改写封面路径。其他需要发布的文章从旧仓库 `posts/` 复制到 `src/content/posts/`；`projects/` 同理复制到 `src/content/projects/`。保留原文件名与层级，减少 URL 变化；不要把旧私密草稿批量复制到公开仓库。
+2. 已将提交 `57655013fccbf5606f4088d28be6c0235e4542ef` 对应的文章 `hello-w1nter.md` 迁入本仓库，并更新为当前本地写作、GitHub Actions 与 VPS 发布架构；首篇文章的排版样式集中在 `src/styles/site.css` 的 `first-post-*` 规则中。其他需要发布的文章从旧仓库 `posts/` 复制到 `src/content/posts/`；`projects/` 同理复制到 `src/content/projects/`。保留原文件名与层级，减少 URL 变化；不要把旧私密草稿批量复制到公开仓库。
 3. 将引用的 `media/` 原图或确实存在的旧 WebP 复制到 `public/images/<slug>/`，改写正文与 `ogImage`。**只有哈希文件名无法还原图片**；若缺少 `7d7d99a489b4d7117f769fcd.webp`，从原图重新导出，或删除该引用/封面字段，不能创建空图片来绕过构建。
 4. 如需同步更新过的资料，将旧 `settings/journal.json` 的 `personal`、`places` 核对后写入 `src/data/journal.json`。不再读取 `src/data/generated/`。头像放在 `public/` 内，`personal.avatar` 使用该目录下的路径，例如 `avatar.webp`。
 5. 完成下一节的 VPS 设置及源码仓库 Secrets，然后将改动合并到 `main`，确认新工作流首次部署成功。
