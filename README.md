@@ -4,6 +4,8 @@
 
 **以阅读为中心的个人博客**
 
+![Astro](https://img.shields.io/badge/Astro-BC52EE?logo=astro&logoColor=white) ![Node.js](https://img.shields.io/badge/Node.js-24%2B-5FA04E?logo=nodedotjs&logoColor=white) ![Markdown](https://img.shields.io/badge/Markdown-000000?logo=markdown&logoColor=white)
+
 文章 · 项目 · 足迹 · 中英文界面
 
 [本地准备](#1-本地准备) · [创建文章](#2-本地创建文章和上传图片) · [检查与预览](#3-本地检查与预览) · [发布](#4-推送-github-并发布到-vps)
